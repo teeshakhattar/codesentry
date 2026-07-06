@@ -1,0 +1,38 @@
+# Environment variables / secrets
+.env
+*.env
+.env.*
+
+# Python virtual environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Cloned repositories scanned by CodeSentry
+sample_repositories/
+
+# IDE / editor
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test / coverage cache
+.pytest_cache/
+.coverage
+htmlcov/

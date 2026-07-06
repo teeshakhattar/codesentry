@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CodeSentry — Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --side-bg:#10162a; --side-bg-soft:#161d38; --side-line:#232b4d; --side-text:#aab2d1; --side-text-dim:#5f6890;
+    --brand:#2ec4b6; --brand-soft:rgba(46,196,182,0.14);
+    --bg:#f4f5f9; --panel:#ffffff; --line:#e7e8f0; --ink:#171a2b; --muted:#6b7185;
+    --high:#e5484d; --high-soft:#fdecec; --medium:#f5a623; --medium-soft:#fef4e2; --low:#2ec47a; --low-soft:#e8f8ef;
+    --display:'Sora', system-ui, sans-serif; --body:'Inter', system-ui, sans-serif; --mono:'JetBrains Mono', ui-monospace, monospace;
+    --shadow-sm:0 1px 2px rgba(23,26,43,0.05), 0 1px 1px rgba(23,26,43,0.04);
+    --shadow-md:0 6px 20px rgba(23,26,43,0.07), 0 2px 6px rgba(23,26,43,0.04);
+  }
+  body[data-theme="dark"]{
+    --bg:#0c0f1c; --panel:#141a2e; --line:#232b4d; --ink:#eef0f8; --muted:#8890b3;
+    --high-soft:rgba(229,72,77,0.14); --medium-soft:rgba(245,166,35,0.14); --low-soft:rgba(46,196,122,0.14);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); display:flex; min-height:100vh;}
+
+  .sidebar{width:230px; flex-shrink:0; background:var(--side-bg); display:flex; flex-direction:column; padding:22px 16px; position:sticky; top:0; height:100vh;}
+  .brand-row{display:flex; align-items:center; gap:10px; padding:0 6px 22px; border-bottom:1px solid var(--side-line); margin-bottom:16px;}
+  .brand-shield{width:30px;height:33px; flex-shrink:0;}
+  .brand-name{font-family:var(--display); font-weight:700; font-size:15px; color:#fff; line-height:1.2;}
+  .brand-sub{font-family:var(--mono); font-size:9px; letter-spacing:.1em; color:var(--brand); margin-top:1px;}
+  .nav-item{display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:9px; font-size:13.5px; font-weight:500; color:var(--side-text); margin-bottom:2px; cursor:default;}
+  .nav-item svg{width:16px;height:16px;flex-shrink:0;}
+  .nav-item.active{background:var(--brand-soft); color:var(--brand); font-weight:600;}
+  .nav-item.disabled{color:var(--side-text-dim); position:relative;}
+  .nav-item.disabled .soon{margin-left:auto; font-family:var(--mono); font-size:8.5px; letter-spacing:.05em; background:var(--side-bg-soft); color:var(--side-text-dim); padding:2px 6px; border-radius:5px;}
+  .sidebar-section-label{font-family:var(--mono); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--side-text-dim); margin:20px 12px 8px;}
+  .recent-scan{padding:9px 12px; border-radius:9px; margin-bottom:2px;}
+  .recent-scan .rs-name{font-size:12.5px; font-weight:600; color:var(--side-text);}
+  .recent-scan .rs-meta{font-family:var(--mono); font-size:10px; color:var(--side-text-dim); margin-top:2px; display:flex; align-items:center; gap:6px;}
+  .rs-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .rs-empty{padding:9px 12px; font-size:11.5px; color:var(--side-text-dim); font-style:italic;}
+  .sidebar-footer{margin-top:auto; padding-top:16px; border-top:1px solid var(--side-line);}
+  .sidebar-footer p{font-family:var(--mono); font-size:10px; color:var(--side-text-dim); line-height:1.6; margin:0; padding:0 6px;}
+
+  .main{flex:1; min-width:0; padding:26px 32px 70px;}
+  .topbar{display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; margin-bottom:20px;}
+  .eyebrow{font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--brand); margin:0 0 6px;}
+  .topbar h1{font-family:var(--display); font-size:24px; font-weight:700; margin:0; display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  .status-pill{font-family:var(--mono); font-size:10.5px; font-weight:600; padding:4px 11px; border-radius:999px; background:var(--medium-soft); color:#a9700f; display:inline-flex; align-items:center; gap:6px;}
+  .status-pill .pdot{width:6px;height:6px;border-radius:50%;background:#a9700f;}
+  .status-pill.done{background:var(--low-soft); color:#1c8f56;}
+  .status-pill.done .pdot{background:#1c8f56;}
+  .topbar-actions{display:flex; align-items:center; gap:10px;}
+  .icon-btn{width:36px;height:36px; border-radius:10px; border:1px solid var(--line); background:var(--panel); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--muted);}
+  .icon-btn:hover{border-color:var(--brand); color:var(--brand);}
+  .export-btn{display:flex; align-items:center; gap:7px; font-family:var(--body); font-size:13px; font-weight:600; padding:9px 15px; border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer;}
+  .export-btn:hover{border-color:var(--brand);}
+  .export-btn:disabled{opacity:.4; cursor:not-allowed;}
+  .avatar{width:34px;height:34px;border-radius:50%; background:var(--brand); color:#fff; display:flex; align-items:center; justify-content:center; font-family:var(--display); font-weight:700; font-size:12px;}
+
+  .scan-bar{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 16px; display:flex; align-items:center; gap:10px; box-shadow:var(--shadow-sm); margin-bottom:22px;}
+  .scan-bar svg.folder{color:var(--muted); flex-shrink:0;}
+  .scan-bar input{flex:1; border:none; outline:none; font-family:var(--mono); font-size:13.5px; background:transparent; color:var(--ink);}
+  .scan-bar input::placeholder{color:#a4a8bb;}
+  .scan-bar button{font-family:var(--display); font-size:13.5px; font-weight:700; padding:11px 22px; border:none; border-radius:10px; background:var(--brand); color:#04211c; cursor:pointer; white-space:nowrap;}
+  .scan-bar button:hover:not(:disabled){background:#26b0a3;}
+  .scan-bar button:disabled{background:#a9e4de; cursor:not-allowed;}
+  .scan-note{font-family:var(--mono); font-size:10.5px; color:var(--muted); margin:-14px 0 22px 4px;}
+
+  .status-panel{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px 24px; display:none; align-items:center; gap:14px; margin-bottom:22px; box-shadow:var(--shadow-sm);}
+  .status-panel.active{display:flex;}
+  .status-panel.error{border-color:var(--high); background:var(--high-soft);}
+  .spinner{width:22px;height:22px;flex-shrink:0; border:3px solid var(--brand-soft); border-top-color:var(--brand); border-radius:50%; animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .status-text{font-size:13.5px; font-weight:600;}
+  .status-sub{font-family:var(--mono); font-size:11.5px; color:var(--muted); margin-top:2px;}
+  .status-panel.error .status-text{color:var(--high);}
+
+  .empty-state{text-align:center; padding:60px 20px;}
+  .empty-state svg{opacity:.3; margin-bottom:14px;}
+  .empty-state p{font-size:13.5px; color:var(--muted); margin:0;}
+
+  .grid4{display:none; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:16px;}
+  .grid4.active{display:grid;}
+  .ocard{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px; box-shadow:var(--shadow-sm);}
+  .risk-card{display:flex; align-items:center; gap:14px;}
+  .risk-card .rc-text{font-family:var(--display); font-weight:700; font-size:14.5px;}
+  .risk-card .rc-sub{font-size:11.5px; color:var(--muted); margin-top:3px; line-height:1.4;}
+  .stat-num{font-family:var(--display); font-size:26px; font-weight:700;}
+  .stat-label{font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-top:2px;}
+  .progress-track{height:6px; background:var(--line); border-radius:99px; margin-top:10px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--brand); border-radius:99px;}
+
+  .grid3{display:none; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:16px;}
+  .grid3.active{display:grid;}
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px; box-shadow:var(--shadow-sm);}
+  .panel-title{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;}
+  .panel-subtitle{font-size:10.5px; color:var(--muted); margin-bottom:14px; line-height:1.4;}
+
+  .donut-row{display:flex; align-items:center; gap:16px;}
+  .donut-legend{flex:1; display:flex; flex-direction:column; gap:8px;}
+  .legend-item{display:flex; align-items:center; gap:8px; font-size:12px;}
+  .legend-dot{width:8px;height:8px;border-radius:3px;flex-shrink:0;}
+  .legend-count{margin-left:auto; font-family:var(--mono); font-weight:600;}
+
+  .trend-empty{text-align:center; padding:20px 6px; font-size:12px; color:var(--muted); font-style:italic;}
+
+  .health-row{display:flex; align-items:center; gap:10px; margin-bottom:13px;}
+  .health-row:last-child{margin-bottom:0;}
+  .health-icon{width:24px;height:24px;border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .health-name{font-size:12px; font-weight:500; width:88px; flex-shrink:0;}
+  .health-track{flex:1; height:6px; background:var(--line); border-radius:99px; overflow:hidden;}
+  .health-fill{height:100%; border-radius:99px;}
+  .health-pct{font-family:var(--mono); font-size:11px; color:var(--muted); width:36px; text-align:right; flex-shrink:0;}
+
+  .content-row{display:none; grid-template-columns:2fr 1fr; gap:14px; align-items:start;}
+  .content-row.active{display:grid;}
+
+  .file-panel{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px; box-shadow:var(--shadow-sm);}
+  .file-toolbar{display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding-bottom:14px; border-bottom:1px solid var(--line); margin-bottom:4px;}
+  .tabs{display:flex; gap:4px; flex-wrap:wrap;}
+  .tab{font-family:var(--body); font-size:12px; font-weight:600; padding:7px 12px; border-radius:8px; color:var(--muted); cursor:pointer; user-select:none; border:1px solid transparent;}
+  .tab:hover{color:var(--ink);}
+  .tab.active{background:var(--ink); color:#fff;}
+  .tab.active.t-high{background:var(--high);}
+  .tab.active.t-medium{background:var(--medium);}
+  .tab.active.t-low{background:var(--low);}
+  .search-box{display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:9px; padding:7px 11px; flex:1; min-width:130px; max-width:200px;}
+  .search-box input{border:none; outline:none; background:transparent; font-size:12px; flex:1; color:var(--ink);}
+  .search-box svg{color:var(--muted); flex-shrink:0;}
+  .sort-select{font-family:var(--body); font-size:12px; font-weight:500; padding:8px 11px; border:1px solid var(--line); border-radius:9px; background:var(--panel); color:var(--ink); cursor:pointer;}
+  .result-count{font-family:var(--mono); font-size:10.5px; color:var(--muted); padding:10px 6px 0;}
+
+  .frow{border-bottom:1px solid var(--line);}
+  .frow:last-child{border-bottom:none;}
+  .frow-head{display:flex; align-items:center; gap:12px; padding:13px 6px; cursor:pointer;}
+  .frow-head:hover{background:var(--bg);}
+  .file-icon{width:32px;height:32px;border-radius:9px; background:var(--brand-soft); color:var(--brand); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .f-info{flex:1; min-width:0;}
+  .f-path{font-family:var(--mono); font-size:12.5px; font-weight:600;}
+  .f-summary{font-size:11.5px; color:var(--muted); margin-top:2px; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;}
+  .f-badges{display:flex; gap:5px; flex-shrink:0;}
+  .fbadge{font-size:10px; font-weight:700; padding:3px 7px; border-radius:999px; white-space:nowrap;}
+  .fbadge.c-high{background:var(--high-soft); color:var(--high);}
+  .fbadge.c-medium{background:var(--medium-soft); color:#a9700f;}
+  .fbadge.c-low{background:var(--low-soft); color:#1c8f56;}
+  .f-chevron{font-family:var(--mono); color:var(--muted); transition:transform .15s ease; flex-shrink:0;}
+  .frow.open .f-chevron{transform:rotate(90deg); color:var(--brand);}
+  .f-body{display:none; padding:0 6px 20px 50px;}
+  .frow.open .f-body{display:block;}
+  .f-summary-full{font-size:13px; line-height:1.6; color:var(--ink); margin-bottom:15px;}
+  .section{margin-bottom:13px;}
+  .section:last-child{margin-bottom:0;}
+  .section-title{font-family:var(--display); font-size:11px; font-weight:700; margin-bottom:7px; display:flex; align-items:center; gap:7px;}
+  .dot{width:6px;height:6px;border-radius:50%;display:inline-block;}
+  .dot.high{background:var(--high);} .dot.medium{background:var(--medium);} .dot.low{background:var(--low);} .dot.neutral{background:var(--brand);}
+  .issue{border-left:3px solid var(--line); padding:7px 11px; margin-bottom:6px; font-size:12.5px; line-height:1.5; background:var(--bg); border-radius:0 8px 8px 0;}
+  .issue.high{border-left-color:var(--high);} .issue.medium{border-left-color:var(--medium);} .issue.low{border-left-color:var(--low);} .issue.none{border-left-color:var(--line);}
+  .issue .sev{font-family:var(--mono); font-size:9px; font-weight:700; text-transform:uppercase; margin-right:6px;}
+  .issue.high .sev{color:var(--high);} .issue.medium .sev{color:#a9700f;} .issue.low .sev{color:#1c8f56;} .issue.none .sev{color:var(--muted);}
+  ul.plain{margin:0;padding-left:17px;}
+  ul.plain li{font-size:12.5px;line-height:1.6;margin-bottom:4px;}
+  .empty-note{font-size:11.5px;color:var(--muted);font-style:italic;}
+  .error-box{font-family:var(--mono); font-size:11px; color:var(--high); background:var(--high-soft); padding:11px; border-radius:9px; word-break:break-all; line-height:1.6;}
+
+  .pagination{display:flex; align-items:center; gap:8px; padding:14px 6px 4px; font-family:var(--mono); font-size:11.5px; color:var(--muted);}
+  .page-btn{width:26px;height:26px;border-radius:7px;border:1px solid var(--line); background:var(--panel); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink);}
+  .page-btn:hover:not(:disabled){border-color:var(--brand);}
+  .page-btn:disabled{opacity:.35; cursor:not-allowed;}
+  .page-btn.current{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+  .side-col{display:flex; flex-direction:column; gap:14px;}
+  .cat-row{display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line);}
+  .cat-row:last-child{border-bottom:none;}
+  .cat-icon{width:24px;height:24px;border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .cat-name{flex:1; font-size:12px; font-weight:500;}
+  .cat-count{font-family:var(--mono); font-size:11.5px; font-weight:700; padding:2px 8px; border-radius:999px;}
+  .lang-row{display:flex; align-items:center; gap:9px; margin-bottom:11px;}
+  .lang-row:last-child{margin-bottom:0;}
+  .lang-dot{width:8px;height:8px;border-radius:3px;flex-shrink:0;}
+  .lang-name{font-size:12px; font-weight:500; width:62px; flex-shrink:0;}
+  .lang-track{flex:1; height:6px; background:var(--line); border-radius:99px; overflow:hidden;}
+  .lang-fill{height:100%; border-radius:99px;}
+  .lang-pct{font-family:var(--mono); font-size:10.5px; color:var(--muted); width:38px; text-align:right; flex-shrink:0;}
+
+  @media (max-width:1100px){
+    .grid3{grid-template-columns:1fr;}
+    .content-row{grid-template-columns:1fr;}
+  }
+  @media (max-width:960px){
+    .sidebar{display:none;}
+    .grid4{grid-template-columns:repeat(2,1fr);}
+  }
+</style>
+<link rel="stylesheet" href="css/modal.css">
+<link rel="stylesheet" href="css/report.css">
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="brand-row">
+      <svg class="brand-shield" viewBox="0 0 24 26" fill="none"><path d="M12 1L2 5v7c0 6.5 4.3 10.8 10 12 5.7-1.2 10-5.5 10-12V5L12 1z" fill="#2ec4b6"/></svg>
+      <div><div class="brand-name">CodeSentry</div><div class="brand-sub">AI CODE REVIEWER</div></div>
+    </div>
+    <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
+    <div class="nav-item" onclick="showRepositoriesView()">
+    <span>Repositories</span>
+</div>
+    <div class="nav-item disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Scan History<span class="soon">SOON</span></div>
+    <div class="nav-item disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 2 5-6"/></svg>Analytics<span class="soon">SOON</span></div>
+    <div class="nav-item disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.5 8.5 0 0 1-4-1L3 20l1.1-5A8.4 8.4 0 0 1 21 11.5z"/></svg>AI Chat<span class="soon">SOON</span></div>
+    <div class="nav-item disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Reports<span class="soon">SOON</span></div>
+    <div class="nav-item disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>Settings<span class="soon">SOON</span></div>
+
+    <div class="sidebar-section-label">Recent scans (this session)</div>
+    <div id="recentScans"><div class="rs-empty">No scans run yet</div></div>
+
+    <div class="sidebar-footer">
+      <p>Nav items marked SOON are part of the roadmap, not wired up yet. Trend and recent-scan data reset when you reload the page — persistent history isn't built yet.</p>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <p class="eyebrow">Repository Dashboard</p>
+        <h1 id="pageTitle">No repository scanned yet <span class="status-pill" id="statusPill"><span class="pdot"></span>Awaiting scan</span></h1>
+      </div>
+      <div class="topbar-actions">
+        <button class="export-btn" id="exportBtn" onclick="exportReport()" disabled>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+          Export report
+        </button>
+        <div class="icon-btn" onclick="toggleTheme()" title="Toggle dark mode">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </div>
+        <div class="avatar">CS</div>
+      </div>
+    </div>
+
+    <div class="scan-bar">
+      <svg class="folder" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h6l2 2h8v12H4z"/></svg>
+      <input id="repoUrl" type="text" placeholder="https://github.com/owner/repo.git" value="https://github.com/pallets/flask.git">
+      <button id="runBtn" onclick="runReview()">Run review</button>
+    </div>
+    <div class="scan-note">Sends to <span id="endpointLabel"></span></div>
+
+    <div class="status-panel" id="statusPanel">
+      <div class="spinner" id="spinner"></div>
+      <div><div class="status-text" id="statusText">Working...</div><div class="status-sub" id="statusSub"></div></div>
+    </div>
+
+    <div class="empty-state" id="emptyState">
+      <svg width="48" height="48" viewBox="0 0 24 26" fill="none"><path d="M12 1L2 5v7c0 6.5 4.3 10.8 10 12 5.7-1.2 10-5.5 10-12V5L12 1z" stroke="#2ec4b6" stroke-width="1.6"/></svg>
+      <p>Paste a repo URL above and run a review to see results here.</p>
+    </div>
+
+    <div class="grid4" id="overviewCards"></div>
+    <div class="grid3" id="analyticsRow"></div>
+
+    <div class="content-row" id="contentRow">
+      <div class="file-panel">
+        <div class="file-toolbar">
+          <div class="tabs" id="tabs">
+            <span class="tab active" data-band="all" onclick="setBandFilter('all')">All Files</span>
+            <span class="tab t-high" data-band="high" onclick="setBandFilter('high')">High Risk</span>
+            <span class="tab t-medium" data-band="medium" onclick="setBandFilter('medium')">Medium Risk</span>
+            <span class="tab t-low" data-band="low" onclick="setBandFilter('low')">Low Risk</span>
+          </div>
+          <div class="search-box">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input id="searchInput" type="text" placeholder="Search files..." oninput="applyFilters()">
+          </div>
+          <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+            <option value="risk-desc">Risk score (high → low)</option>
+            <option value="risk-asc">Risk score (low → high)</option>
+            <option value="name-asc">File name (A → Z)</option>
+          </select>
+        </div>
+        <div class="result-count" id="resultCount"></div>
+        <div id="fileRows"></div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+
+      <div class="side-col">
+        <div class="panel">
+          <div class="panel-title">Language breakdown</div>
+          <div id="langPanel"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Findings by category</div>
+          <div id="catPanel"></div>
+        </div>
+      </div>
+    </div>
+    <section id="repositoriesView" style="display: none;">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">REPOSITORY MANAGEMENT</p>
+            <h1>Repositories</h1>
+            <p>Previously scanned repositories</p>
+        </div>
+    </div>
+
+    <div id="repositoriesList">
+        <p>Loading repositories...</p>
+    </div>
+</section>
+<!-- Dedicated Saved Report View -->
+<div id="reportView" class="report-view" style="display: none;"></div>
+  </div>
+
+<script>
+const API_BASE = "http://127.0.0.1:8000";
+const ENDPOINT = `${API_BASE}/review-repository`;
+document.getElementById('endpointLabel').textContent = ENDPOINT;
+
+let lastData = null;
+let currentBandFilter = 'all';
+let scanInterval = null;
+let sessionScans = [];
+let currentPage = 1;
+const PAGE_SIZE = 6;
+
+const SCAN_MESSAGES = ["Cloning the repository...","Scanning for core source files...","Sending files out for review...","Reading through the logic...","Weighing up bugs and risk...","Almost there..."];
+
+function toggleTheme(){ document.body.dataset.theme = document.body.dataset.theme === 'dark' ? '' : 'dark'; }
+
+function sevColors(band){
+  const b = (band||'').toLowerCase();
+  if(b==='high') return {fg:'var(--high)', hex:'#e5484d'};
+  if(b==='medium') return {fg:'#a9700f', hex:'#f5a623'};
+  if(b==='low') return {fg:'#1c8f56', hex:'#2ec47a'};
+  return {fg:'var(--muted)', hex:'#c4c8d6'};
+}
+
+function ringSvg(score, band, size){
+  size = size||44;
+  const r = size/2-5, c = 2*Math.PI*r;
+  const val = (score===null||score===undefined)?0:score;
+  const offset = c*(1-val/100);
+  const colors = sevColors(band);
+  const label = (score===null||score===undefined)?'?':score;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="flex-shrink:0;">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="4"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${colors.hex}" stroke-width="4" stroke-dasharray="${c}" stroke-dashoffset="${offset}" stroke-linecap="round" transform="rotate(-90 ${size/2} ${size/2})"/>
+    <text x="${size/2}" y="${size/2+4}" text-anchor="middle" font-family="Sora, sans-serif" font-weight="700" font-size="${size*0.28}" fill="var(--ink)">${label}</text>
+  </svg>`;
+}
+
+function extractJson(reviewText){
+  if(!reviewText || typeof reviewText !== 'string') return null;
+  const m = reviewText.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/);
+  const raw = m ? m[1] : reviewText.trim();
+  try { return JSON.parse(raw); } catch(e) { return null; }
+}
+
+function fileExt(path){ const parts=(path||'').split('.'); return parts.length>1 ? parts.pop().toLowerCase() : 'other'; }
+const EXT_LABELS = {py:'Python', js:'JavaScript', jsx:'JavaScript', ts:'TypeScript', tsx:'TypeScript', java:'Java', cpp:'C++', c:'C', cs:'C#', go:'Go', php:'PHP', rb:'Ruby', rs:'Rust', swift:'Swift', kt:'Kotlin', scala:'Scala'};
+const EXT_COLORS = ['#2ec4b6','#f5a623','#6c5ce7','#e5484d','#3d5a80','#8890b3'];
+
+function buildLanguageBreakdown(reviews){
+  const counts = {};
+  reviews.forEach(r => { const label = EXT_LABELS[fileExt(r.file)] || 'Other'; counts[label] = (counts[label]||0)+1; });
+  const total = reviews.length || 1;
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([label,count],i)=>({label,count,pct:Math.round((count/total)*1000)/10,color:EXT_COLORS[i%EXT_COLORS.length]}));
+}
+
+function buildCategoryCounts(reviews){
+  let bugs=0, security=0, performance=0, cleanCode=0, bestPractices=0;
+  reviews.forEach(r => {
+    const p = extractJson(r.review); if(!p) return;
+    bugs += (p.bugs||[]).length; security += (p.security||[]).length; performance += (p.performance||[]).length;
+    cleanCode += (p.clean_code||[]).length; bestPractices += (p.best_practices||[]).length;
+  });
+  return [
+    {name:'Security', count:security, color:'#e5484d', bg:'var(--high-soft)'},
+    {name:'Bugs', count:bugs, color:'#a9700f', bg:'var(--medium-soft)'},
+    {name:'Performance', count:performance, color:'#6c5ce7', bg:'#efedfd'},
+    {name:'Best practices', count:bestPractices, color:'#1c8f56', bg:'var(--low-soft)'},
+    {name:'Clean code notes', count:cleanCode, color:'#3d5a80', bg:'#e9edf3'},
+  ];
+}
+
+// Same severity weights as the backend scoring pipeline (High=5, Medium=3, Low=1),
+// applied per category so "health" bars use the identical, explainable methodology.
+function categoryHealth(items, fileCount){
+  const weights = {High:5, Medium:3, Low:1};
+  let weighted = 0;
+  (items||[]).forEach(i => { weighted += weights[i.severity] || weights.Low; });
+  const perFile = weighted / Math.max(1, fileCount);
+  return Math.max(0, Math.round(100 - perFile*12));
+}
+
+function buildHealthMetrics(reviews){
+  let allSecurity=[], allPerformance=[], noteCount=0, qualitySum=0, qualityN=0;
+  reviews.forEach(r => {
+    const p = extractJson(r.review); if(!p) return;
+    allSecurity = allSecurity.concat(p.security||[]);
+    allPerformance = allPerformance.concat(p.performance||[]);
+    noteCount += (p.clean_code||[]).length + (p.best_practices||[]).length;
+    if(typeof p.score === 'number'){ qualitySum += p.score; qualityN++; }
+  });
+  const fileCount = reviews.length || 1;
+  const security = categoryHealth(allSecurity, fileCount);
+  const performance = categoryHealth(allPerformance, fileCount);
+  const maintainability = Math.max(0, Math.round(100 - (noteCount/fileCount)*8));
+  const codeQuality = qualityN ? Math.round((qualitySum/qualityN)*10) : 50;
+  return [
+    {name:'Security', pct:security, color:'#e5484d'},
+    {name:'Maintainability', pct:maintainability, color:'#3d5a80'},
+    {name:'Performance', pct:performance, color:'#f5a623'},
+    {name:'Code quality', pct:codeQuality, color:'#6c5ce7'},
+  ];
+}
+
+function buildDonut(counts){
+  const total = counts.High+counts.Medium+counts.Low;
+  if(total===0) return `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="none" stroke="var(--line)" stroke-width="13"/></svg>`;
+  const r=38, c=2*Math.PI*r;
+  const segs = [{val:counts.High,color:'#e5484d'},{val:counts.Medium,color:'#f5a623'},{val:counts.Low,color:'#2ec47a'}];
+  let acc=0;
+  const circles = segs.filter(s=>s.val>0).map(s => {
+    const dash = (s.val/total)*c;
+    const el = `<circle cx="50" cy="50" r="${r}" fill="none" stroke="${s.color}" stroke-width="13" stroke-dasharray="${dash} ${c-dash}" stroke-dashoffset="${-acc}" transform="rotate(-90 50 50)"/>`;
+    acc += dash; return el;
+  }).join('');
+  return `<svg width="100" height="100" viewBox="0 0 100 100">${circles}
+    <text x="50" y="47" text-anchor="middle" font-family="Sora, sans-serif" font-weight="700" font-size="19" fill="var(--ink)">${total}</text>
+    <text x="50" y="61" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="var(--muted)">issues</text>
+  </svg>`;
+}
+
+function buildTrendChart(){
+  if(sessionScans.length < 1){
+    return `<div class="trend-empty">Run a scan to start tracking risk over this session.</div>`;
+  }
+  const points = [...sessionScans].reverse(); // chronological order
+  const w = 260, h = 110, pad = 20;
+  const maxScore = 100;
+  const stepX = points.length > 1 ? (w - pad*2) / (points.length - 1) : 0;
+
+  const coords = points.map((p, i) => {
+    const x = pad + i*stepX;
+    const y = h - pad - ((p.score||0)/maxScore)*(h - pad*1.6);
+    return {x, y, score: p.score};
+  });
+
+  const pathD = coords.map((c,i) => (i===0?'M':'L') + c.x.toFixed(1) + ',' + c.y.toFixed(1)).join(' ');
+  const areaD = pathD + ` L${coords[coords.length-1].x.toFixed(1)},${h-pad} L${coords[0].x.toFixed(1)},${h-pad} Z`;
+  const dots = coords.map(c => `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="3" fill="#f5a623"/>`).join('');
+
+  return `<svg width="100%" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">
+    <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="var(--line)" stroke-width="1"/>
+    <path d="${areaD}" fill="rgba(245,166,35,0.12)" stroke="none"/>
+    <path d="${pathD}" fill="none" stroke="#f5a623" stroke-width="2"/>
+    ${dots}
+  </svg>`;
+}
+
+function setBandFilter(band){
+  currentBandFilter = band; currentPage = 1;
+  document.querySelectorAll('#tabs .tab').forEach(t => t.classList.toggle('active', t.dataset.band===band));
+  applyFilters();
+}
+function getBand(entry){ return (entry.scoring && entry.scoring.risk_band) ? entry.scoring.risk_band.toLowerCase() : null; }
+function getScore(entry){ return (entry.scoring && entry.scoring.risk_score!==null && entry.scoring.risk_score!==undefined) ? entry.scoring.risk_score : -1; }
+
+function applyFilters(){
+  if(!lastData) return;
+  const sortMode = document.getElementById('sortSelect').value;
+  const query = document.getElementById('searchInput').value.trim().toLowerCase();
+  let entries = [...(lastData.reviews||[])];
+
+  if(currentBandFilter!=='all') entries = entries.filter(e => getBand(e)===currentBandFilter);
+  if(query) entries = entries.filter(e => (e.file||'').toLowerCase().includes(query));
+
+  entries.sort((a,b) => {
+    if(sortMode==='name-asc') return (a.file||'').localeCompare(b.file||'');
+    const sa=getScore(a), sb=getScore(b);
+    return sortMode==='risk-asc' ? sa-sb : sb-sa;
+  });
+
+  const total = entries.length;
+  const totalPages = Math.max(1, Math.ceil(total/PAGE_SIZE));
+  if(currentPage > totalPages) currentPage = totalPages;
+  const pageEntries = entries.slice((currentPage-1)*PAGE_SIZE, currentPage*PAGE_SIZE);
+
+  document.getElementById('fileRows').innerHTML = pageEntries.map((e,i) => renderFileRow(e,i)).join('');
+
+  const allTotal = (lastData.reviews||[]).length;
+  const rangeStart = total===0 ? 0 : (currentPage-1)*PAGE_SIZE+1;
+  const rangeEnd = Math.min(total, currentPage*PAGE_SIZE);
+  document.getElementById('resultCount').textContent = total===allTotal
+    ? `Showing ${rangeStart}-${rangeEnd} of ${total} files`
+    : `Showing ${rangeStart}-${rangeEnd} of ${total} files (filtered from ${allTotal})`;
+
+  renderPagination(totalPages);
+}
+
+function renderPagination(totalPages){
+  const el = document.getElementById('pagination');
+  if(totalPages <= 1){ el.innerHTML = ''; return; }
+  let html = `<span class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'style="opacity:.35;pointer-events:none;"':''}>&#8249;</span>`;
+  for(let p=1; p<=totalPages; p++){
+    html += `<span class="page-btn ${p===currentPage?'current':''}" onclick="goPage(${p})">${p}</span>`;
+  }
+  html += `<span class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'style="opacity:.35;pointer-events:none;"':''}>&#8250;</span>`;
+  el.innerHTML = html;
+}
+function goPage(p){ currentPage = p; applyFilters(); }
+
+function issueList(items){
+  if(!items || !items.length) return `<p class="empty-note">No findings in this category.</p>`;
+  return items.map(i => {
+    const sev = (i.severity||'Low').toLowerCase();
+    const cls = ['high','medium','low'].includes(sev) ? sev : 'none';
+    return `<div class="issue ${cls}"><span class="sev">${i.severity||'N/A'}</span>${i.issue}</div>`;
+  }).join('');
+}
+function plainList(items){
+  if(!items || !items.length) return `<p class="empty-note">Nothing noted.</p>`;
+  return `<ul class="plain">${items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+}
+function rowBadges(scoring){
+  if(!scoring || scoring.risk_score===null || scoring.risk_score===undefined) return `<span class="fbadge c-high">Not scored</span>`;
+  const c = scoring.finding_counts || {High:0,Medium:0,Low:0};
+  const parts=[];
+  if(c.High) parts.push(`<span class="fbadge c-high">${c.High} High</span>`);
+  if(c.Medium) parts.push(`<span class="fbadge c-medium">${c.Medium} Med</span>`);
+  if(c.Low) parts.push(`<span class="fbadge c-low">${c.Low} Low</span>`);
+  if(!c.High && !c.Medium && !c.Low) parts.push(`<span class="fbadge c-low">Clean</span>`);
+  return parts.join('');
+}
+
+function renderFileRow(entry, idx){
+  const scoring = entry.scoring || {};
+  const parsed = extractJson(entry.review);
+  const shortPath = (entry.file||'').split(/[\\\/]/).slice(-2).join('/');
+  const rowId = 'frow-' + shortPath.replace(/[^a-z0-9]/gi,'_') + '-' + idx;
+
+  let body;
+  if(!parsed){
+    body = `<div class="error-box">${(entry.review||'No review text.').slice(0,800)}</div>`;
+  } else {
+    body = `
+      <p class="f-summary-full">${parsed.summary||''}</p>
+      <div class="section"><div class="section-title"><span class="dot high"></span>Bugs</div>${issueList(parsed.bugs)}</div>
+      <div class="section"><div class="section-title"><span class="dot high"></span>Security</div>${issueList(parsed.security)}</div>
+      <div class="section"><div class="section-title"><span class="dot medium"></span>Performance</div>${issueList(parsed.performance)}</div>
+      <div class="section"><div class="section-title"><span class="dot low"></span>Clean code notes</div>${plainList(parsed.clean_code)}</div>
+      <div class="section"><div class="section-title"><span class="dot neutral"></span>Best practices</div>${plainList(parsed.best_practices)}</div>
+    `;
+  }
+
+  return `
+    <div class="frow" id="${rowId}">
+      <div class="frow-head" onclick="document.getElementById('${rowId}').classList.toggle('open')">
+        <div class="file-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+        <div class="f-info">
+          <div class="f-path">${shortPath}</div>
+          <div class="f-summary">${parsed ? (parsed.summary||'') : 'Could not parse review output'}</div>
+        </div>
+        <div class="f-badges">${rowBadges(scoring)}</div>
+        ${ringSvg(scoring.risk_score, scoring.risk_band, 38)}
+        <div class="f-chevron">&#9656;</div>
+      </div>
+      <div class="f-body">${body}</div>
+    </div>
+  `;
+}
+
+function startScanStatus(){
+  const panel = document.getElementById('statusPanel');
+  panel.className = 'status-panel active';
+  document.getElementById('spinner').style.display = 'block';
+  let i=0;
+  document.getElementById('statusText').textContent = SCAN_MESSAGES[0];
+  document.getElementById('statusSub').textContent = "Usually takes 30-90 seconds depending on repo size.";
+  scanInterval = setInterval(() => { i=(i+1)%SCAN_MESSAGES.length; document.getElementById('statusText').textContent = SCAN_MESSAGES[i]; }, 4000);
+}
+function stopScanStatus(){ if(scanInterval){clearInterval(scanInterval); scanInterval=null;} document.getElementById('statusPanel').className='status-panel'; }
+function showError(msg){
+  stopScanStatus();
+  const panel = document.getElementById('statusPanel');
+  panel.className = 'status-panel active error';
+  document.getElementById('spinner').style.display = 'none';
+  document.getElementById('statusText').textContent = "Something went wrong";
+  document.getElementById('statusSub').textContent = msg;
+}
+
+async function runReview(){
+  const url = document.getElementById('repoUrl').value.trim();
+  if(!url){ showError('Enter a repository URL first.'); return; }
+
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true; btn.textContent = 'Running...';
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('overviewCards').className = 'grid4';
+  document.getElementById('analyticsRow').className = 'grid3';
+  document.getElementById('contentRow').className = 'content-row';
+  document.getElementById('exportBtn').disabled = true;
+  currentPage = 1;
+  startScanStatus();
+
+  const startTime = performance.now();
+
+  try {
+    const response = await fetch(ENDPOINT, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({repo_url:url})});
+    if(!response.ok){ const text = await response.text(); throw new Error(`Server returned ${response.status}: ${text.slice(0,300)}`); }
+    const data = await response.json();
+    const elapsedSeconds = ((performance.now()-startTime)/1000).toFixed(2);
+    stopScanStatus();
+    renderResult(data, elapsedSeconds);
+    sessionScans.unshift({repo:data.repository, band:data.repository_risk_band, score:data.repository_risk_score, time:new Date()});
+    renderSidebarScans();
+  } catch(err){
+    showError(err.message + " — check your backend is running.");
+  } finally {
+    btn.disabled = false; btn.textContent = 'Run review';
+  }
+}
+
+function renderSidebarScans(){
+  const el = document.getElementById('recentScans');
+  if(!sessionScans.length){ el.innerHTML = `<div class="rs-empty">No scans run yet</div>`; return; }
+  el.innerHTML = sessionScans.slice(0,5).map(s => {
+    const colors = sevColors(s.band);
+    return `<div class="recent-scan"><div class="rs-name">${s.repo}</div>
+      <div class="rs-meta"><span class="rs-dot" style="background:${colors.hex}"></span>${s.band} risk · ${s.time.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div></div>`;
+  }).join('');
+}
+
+function exportReport(){
+  if(!lastData) return;
+  const blob = new Blob([JSON.stringify(lastData, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `codesentry-${lastData.repository}-report.json`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function renderResult(data, elapsedSeconds){
+  lastData = data;
+  currentBandFilter = 'all';
+  document.querySelectorAll('#tabs .tab').forEach(t => t.classList.toggle('active', t.dataset.band==='all'));
+  document.getElementById('sortSelect').value = 'risk-desc';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('exportBtn').disabled = false;
+
+  const band = data.repository_risk_band || 'Unknown';
+  const colors = sevColors(band);
+  document.getElementById('pageTitle').innerHTML = `${data.repository} <span class="status-pill done"><span class="pdot"></span>Scan complete</span>`;
+
+  const reviews = data.reviews || [];
+  let totalCounts = {High:0, Medium:0, Low:0};
+  reviews.forEach(r => { const c=(r.scoring&&r.scoring.finding_counts)||{}; totalCounts.High+=c.High||0; totalCounts.Medium+=c.Medium||0; totalCounts.Low+=c.Low||0; });
+
+  document.getElementById('overviewCards').innerHTML = `
+    <div class="ocard risk-card">
+      ${ringSvg(data.repository_risk_score, band, 52)}
+      <div><div class="rc-text" style="color:${colors.fg}">${band} Risk</div>
+      <div class="rc-sub">${totalCounts.High+totalCounts.Medium+totalCounts.Low} findings across ${data.files_reviewed} files.</div></div>
+    </div>
+    <div class="ocard">
+      <div class="stat-num">${data.files_scored ?? '—'} <span style="font-size:14px;color:var(--muted);font-weight:500;">/ ${data.files_reviewed ?? '—'}</span></div>
+      <div class="stat-label">Files scored</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${data.files_reviewed ? (data.files_scored/data.files_reviewed*100) : 0}%"></div></div>
+    </div>
+    <div class="ocard">
+      <div class="stat-num" style="font-size:18px;">Groq</div>
+      <div class="stat-label">Primary provider</div>
+      <div class="rc-sub" style="margin-top:8px;">Llama 3.1 8B Instant — falls back to Gemini on rate limits.</div>
+    </div>
+    <div class="ocard">
+      <div class="stat-num">${elapsedSeconds}s</div>
+      <div class="stat-label">Scan time</div>
+      <div class="rc-sub" style="margin-top:8px;">Measured for this run, start to finish.</div>
+    </div>
+  `;
+  document.getElementById('overviewCards').className = 'grid4 active';
+
+  const healthData = buildHealthMetrics(reviews);
+
+  document.getElementById('analyticsRow').innerHTML = `
+    <div class="panel">
+      <div class="panel-title">Issues breakdown</div>
+      <div class="panel-subtitle">Aggregated across all reviewed files.</div>
+      <div class="donut-row">
+        ${buildDonut(totalCounts)}
+        <div class="donut-legend">
+          <div class="legend-item"><span class="legend-dot" style="background:#e5484d"></span>High<span class="legend-count">${totalCounts.High}</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#f5a623"></span>Medium<span class="legend-count">${totalCounts.Medium}</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#2ec47a"></span>Low<span class="legend-count">${totalCounts.Low}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Risk trend</div>
+      <div class="panel-subtitle">This browser session only — resets on reload.</div>
+      ${buildTrendChart()}
+    </div>
+    <div class="panel">
+      <div class="panel-title">Repository health</div>
+      <div class="panel-subtitle">Derived from this scan's findings using the same severity weights as the risk score.</div>
+      ${healthData.map(h => `
+        <div class="health-row">
+          <div class="health-icon" style="background:${h.color}22"><span class="dot" style="background:${h.color}"></span></div>
+          <div class="health-name">${h.name}</div>
+          <div class="health-track"><div class="health-fill" style="width:${h.pct}%;background:${h.color}"></div></div>
+          <div class="health-pct">${h.pct}%</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  document.getElementById('analyticsRow').className = 'grid3 active';
+
+  const langData = buildLanguageBreakdown(reviews);
+  document.getElementById('langPanel').innerHTML = langData.length ? langData.map(l => `
+    <div class="lang-row">
+      <span class="lang-dot" style="background:${l.color}"></span>
+      <span class="lang-name">${l.label}</span>
+      <div class="lang-track"><div class="lang-fill" style="width:${l.pct}%;background:${l.color}"></div></div>
+      <span class="lang-pct">${l.pct}%</span>
+    </div>
+  `).join('') : `<p class="empty-note">No files to break down.</p>`;
+
+  const catData = buildCategoryCounts(reviews);
+  document.getElementById('catPanel').innerHTML = catData.map(c => `
+    <div class="cat-row">
+      <div class="cat-icon" style="background:${c.bg}"><span class="dot" style="background:${c.color}"></span></div>
+      <div class="cat-name">${c.name}</div>
+      <div class="cat-count" style="background:${c.bg};color:${c.color}">${c.count}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('contentRow').className = 'content-row active';
+  applyFilters();
+}
+function showDashboardView() {
+    document.getElementById("repositoriesView").style.display = "none";
+    document.getElementById("emptyState").style.display = lastData ? "none" : "block";
+    document.getElementById("overviewCards").style.display = "";
+    document.getElementById("analyticsRow").style.display = "";
+    document.getElementById("contentRow").style.display = "";
+}
+
+async function showRepositoriesView() {
+    console.log("Opening repositories view");
+
+    const repositoriesView = document.getElementById("repositoriesView");
+    const repositoriesList = document.getElementById("repositoriesList");
+
+    if (!repositoriesView || !repositoriesList) {
+        console.error("Repository view elements not found");
+        showCodeSentryModal(
+            "Repository View Error",
+            "The repository section could not be found in the page."
+        );
+        return;
+    }
+
+    // Hide dashboard result sections while repository management is open.
+    document.getElementById("emptyState").style.display = "none";
+    document.getElementById("overviewCards").style.display = "none";
+    document.getElementById("analyticsRow").style.display = "none";
+    document.getElementById("contentRow").style.display = "none";
+
+    repositoriesView.style.display = "block";
+    repositoriesList.innerHTML = `<p class="empty-note">Loading repositories...</p>`;
+
+    try {
+        const response = await fetch(`${API_BASE}/repositories`);
+
+        if (!response.ok) {
+            throw new Error(`Failed to load repositories: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Repositories received:", data);
+        renderRepositories(data.repositories || []);
+    } catch (error) {
+        console.error("Repositories error:", error);
+        repositoriesList.innerHTML = `<p class="empty-note">Could not load repositories.</p>`;
+        showCodeSentryModal(
+            "Unable to Load Repositories",
+            "CodeSentry could not retrieve the repository list. Check that the FastAPI backend is running on port 8000."
+        );
+    }
+}
+
+function renderRepositories(repositories) {
+    const container = document.getElementById("repositoriesList");
+
+    if (!repositories || !repositories.length) {
+        container.innerHTML = `<p class="empty-note">No repositories scanned yet.</p>`;
+        return;
+    }
+
+    container.innerHTML = repositories.map(repo => {
+        const safeName = escapeHtml(repo.repository || "Unknown");
+        const encodedName = encodeURIComponent(repo.repository || "");
+        const scannedAt = repo.last_scanned_at
+            ? new Date(repo.last_scanned_at).toLocaleString()
+            : "Unknown";
+
+        return `
+            <div class="ocard"
+                 onclick="showRepositoryScans(decodeURIComponent('${encodedName}'))"
+                 style="cursor:pointer; margin-bottom:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
+                    <div>
+                        <h3 style="margin:0 0 12px;font-family:var(--display);">${safeName}</h3>
+                        <p><strong>Risk Score:</strong> ${repo.repository_risk_score ?? "—"}</p>
+                        <p><strong>Risk Band:</strong> ${escapeHtml(repo.repository_risk_band || "Unknown")}</p>
+                        <p><strong>Files Reviewed:</strong> ${repo.files_reviewed ?? 0}</p>
+                        <p><strong>Scan Count:</strong> ${repo.scan_count ?? 0}</p>
+                        <p><strong>Last Scanned:</strong> ${escapeHtml(scannedAt)}</p>
+                    </div>
+                    <span class="status-pill">
+                        <span class="pdot"></span>${escapeHtml(repo.repository_risk_band || "Unknown")}
+                    </span>
+                </div>
+                <small style="color:var(--brand);font-weight:600;">Click to view scan history →</small>
+            </div>
+        `;
+    }).join("");
+}
+
+async function showRepositoryScans(repositoryName) {
+    console.log("Opening scan history for:", repositoryName);
+
+    const container = document.getElementById("repositoriesList");
+    container.innerHTML = `<p class="empty-note">Loading scan history...</p>`;
+
+    try {
+        const response = await fetch(
+            `${API_BASE}/repositories/${encodeURIComponent(repositoryName)}/scans`
+        );
+
+        if (!response.ok) {
+            throw new Error(`Failed to load scan history: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Repository scan history:", data);
+        renderRepositoryScans(data);
+    } catch (error) {
+        console.error("Scan history error:", error);
+        showCodeSentryModal(
+            "Unable to Load Scan History",
+            "CodeSentry could not retrieve the scan history for this repository."
+        );
+        await showRepositoriesView();
+    }
+}
+
+function renderRepositoryScans(data) {
+    const container = document.getElementById("repositoriesList");
+    const scans = data.scans || [];
+    const repository = data.repository || "Repository";
+
+    if (!scans.length) {
+        container.innerHTML = `
+            <button class="export-btn" onclick="showRepositoriesView()" style="margin-bottom:16px;">← Back to repositories</button>
+            <p class="empty-note">No scans found for ${escapeHtml(repository)}.</p>
+        `;
+        return;
+    }
+
+    container.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
+            <div>
+                <p class="eyebrow">SCAN HISTORY</p>
+                <h2 style="font-family:var(--display);margin:0;">${escapeHtml(repository)}</h2>
+                <p style="color:var(--muted);margin:6px 0 0;">${data.scan_count ?? scans.length} saved scan(s)</p>
+            </div>
+            <button class="export-btn" onclick="showRepositoriesView()">← Back to repositories</button>
+        </div>
+
+        ${scans.map(scan => {
+            const band = scan.repository_risk_band || "Unknown";
+            const colors = sevColors(band);
+            const scannedAt = scan.scanned_at
+                ? new Date(scan.scanned_at).toLocaleString()
+                : "Unknown";
+
+            return `
+                <div class="ocard"
+                     onclick="openScanReport(${Number(scan.id)})"
+                     style="cursor:pointer;margin-bottom:14px;">
+                    <div style="display:flex;align-items:center;gap:14px;">
+                        ${ringSvg(scan.repository_risk_score, band, 48)}
+                        <div style="flex:1;">
+                            <h3 style="margin:0 0 6px;font-family:var(--display);">Scan #${Number(scan.id)}</h3>
+                            <div style="font-size:12px;color:var(--muted);">${escapeHtml(scannedAt)}</div>
+                            <div style="font-size:12px;color:var(--muted);margin-top:4px;">
+                                ${scan.files_reviewed ?? 0} files reviewed
+                            </div>
+                        </div>
+                        <span class="status-pill" style="color:${colors.fg};">
+                            <span class="pdot" style="background:${colors.hex};"></span>${escapeHtml(band)}
+                        </span>
+                    </div>
+                    <small style="display:block;margin-top:12px;color:var(--brand);font-weight:600;">Click to open full report →</small>
+                </div>
+            `;
+        }).join("")}
+    `;
+}
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function showCodeSentryModal(title, message) {
+    const existingModal = document.getElementById("codeSentryModal");
+    if (existingModal) existingModal.remove();
+
+    const modal = document.createElement("div");
+    modal.id = "codeSentryModal";
+    modal.innerHTML = `
+        <div class="codesentry-modal-overlay" onclick="closeCodeSentryModal(event)">
+            <div class="codesentry-modal-box" onclick="event.stopPropagation()">
+                <div class="codesentry-modal-icon">!</div>
+                <h2>${escapeHtml(title)}</h2>
+                <p>${escapeHtml(message)}</p>
+                <button type="button" onclick="closeCodeSentryModal()">Okay</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function closeCodeSentryModal(event) {
+    if (event && event.target !== event.currentTarget) return;
+    const modal = document.getElementById("codeSentryModal");
+    if (modal) modal.remove();
+}
+
+</script>
+<script src="js/report.js"></script>
+</body>
+</html>
