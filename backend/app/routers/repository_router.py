@@ -1,25 +1,29 @@
-from pathlib import Path
 import traceback
 
 from fastapi import APIRouter, HTTPException
 
 from app.schemas.repository_schema import RepositoryRequest
 from app.services.git_service import clone_repository
-from app.services.repository_scanner import scan_repository
-from app.services.file_reader import read_repository_files
-from app.services.ai_reviewer import test_gemini, review_code
-from app.services.review_service import review_repository
+from app.services.ai_reviewer import test_gemini
+from app.services.review_service import (
+    review_repository,
+    review_repository_changes,
+)
 
 
-router = APIRouter(prefix="", tags=["Repository"])
+router = APIRouter(
+    prefix="",
+    tags=["Repository"]
+)
 
 
 @router.post("/review-repository")
-def review_repository_endpoint(repository: RepositoryRequest):
-    print("REQUEST RECEIVED")
+def review_repository_endpoint(
+    repository: RepositoryRequest
+):
+    print("FULL REVIEW REQUEST RECEIVED")
 
     try:
-        # Convert Pydantic HttpUrl to normal Python string
         repo_url = str(repository.repo_url)
 
         return review_repository(repo_url)
@@ -27,91 +31,66 @@ def review_repository_endpoint(repository: RepositoryRequest):
     except Exception as e:
         traceback.print_exc()
 
-        return {
-            "success": False,
-            "error": str(e),
-            "traceback": traceback.format_exc()
-        }
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+
+@router.post("/review-repository/incremental")
+def review_repository_incremental_endpoint(
+    repository: RepositoryRequest
+):
+    print("INCREMENTAL REVIEW REQUEST RECEIVED")
+
+    try:
+        repo_url = str(repository.repo_url)
+
+        return review_repository_changes(
+            repo_url=repo_url,
+            base_ref="HEAD~1",
+            target_ref="HEAD",
+        )
+
+    except Exception as e:
+        traceback.print_exc()
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
 
 @router.post("/clone")
-def clone_repo(repository: RepositoryRequest):
+def clone_repo(
+    repository: RepositoryRequest
+):
     try:
-        # Convert HttpUrl to string here too
         repo_url = str(repository.repo_url)
 
         return clone_repository(repo_url)
 
     except Exception as e:
+        traceback.print_exc()
+
         raise HTTPException(
             status_code=500,
             detail=str(e)
         )
-
-
-@router.get("/scan")
-def scan():
-    repository_path = Path("sample_repositories/flask")
-
-    if not repository_path.exists():
-        raise HTTPException(
-            status_code=404,
-            detail=f"Repository not found: {repository_path}"
-        )
-
-    return scan_repository(repository_path)
-
-
-@router.get("/read-files")
-def read_files():
-    repository_path = Path("sample_repositories/flask")
-
-    if not repository_path.exists():
-        raise HTTPException(
-            status_code=404,
-            detail=f"Repository not found: {repository_path}"
-        )
-
-    file_paths = scan_repository(repository_path)
-
-    return read_repository_files(file_paths)
 
 
 @router.get("/test-ai")
-def test_ai():
+def test_ai_endpoint():
     try:
-        response = test_gemini()
-
         return {
             "success": True,
-            "response": response
+            "response": test_gemini()
         }
 
     except Exception as e:
+        traceback.print_exc()
+
         raise HTTPException(
             status_code=500,
             detail=str(e)
         )
-
-
-@router.get("/review-test")
-def review_test():
-    sample_code = """
-def add(a, b):
-    return a + b
-"""
-
-    try:
-        review = review_code(sample_code)
-
-        return {
-            "success": True,
-            "review": review
-        }
-
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e),
-            "traceback": traceback.format_exc()
-        }

@@ -30,6 +30,7 @@
   .brand-sub{font-family:var(--mono); font-size:9px; letter-spacing:.1em; color:var(--brand); margin-top:1px;}
   .nav-item{display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:9px; font-size:13.5px; font-weight:500; color:var(--side-text); margin-bottom:2px; cursor:default;}
   .nav-item svg{width:16px;height:16px;flex-shrink:0;}
+  .nav-item:not(.disabled){cursor:pointer;}
   .nav-item.active{background:var(--brand-soft); color:var(--brand); font-weight:600;}
   .nav-item.disabled{color:var(--side-text-dim); position:relative;}
   .nav-item.disabled .soon{margin-left:auto; font-family:var(--mono); font-size:8.5px; letter-spacing:.05em; background:var(--side-bg-soft); color:var(--side-text-dim); padding:2px 6px; border-radius:5px;}
@@ -191,6 +192,207 @@
     .sidebar{display:none;}
     .grid4{grid-template-columns:repeat(2,1fr);}
   }
+
+    /* SETTINGS */
+    .settings-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px;align-items:start}
+    .settings-tabs{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:8px;position:sticky;top:92px}
+    .settings-tab{width:100%;border:0;background:transparent;color:var(--muted);padding:11px 12px;border-radius:8px;text-align:left;font:600 13px var(--body);cursor:pointer;display:flex;align-items:center;gap:9px}
+    .settings-tab:hover{background:var(--surface2);color:var(--text)} .settings-tab.active{background:var(--brand-light);color:var(--brand-dark)}
+    .settings-panel{display:none}.settings-panel.active{display:block}
+    .settings-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:16px;box-shadow:var(--shadow)}
+    .settings-card h2{font:700 18px var(--display);margin:0 0 6px}.settings-card-desc{color:var(--muted);font-size:13px;margin:0 0 20px}
+    .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.settings-field{display:flex;flex-direction:column;gap:7px}
+    .settings-field label{font:700 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+    .settings-input,.settings-select{width:100%;border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:8px;padding:11px 12px;font:500 13px var(--body);outline:none}
+    .settings-input:focus,.settings-select:focus{border-color:var(--brand)}
+    .settings-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}.settings-save{border:0;background:var(--brand);color:#fff;padding:10px 16px;border-radius:8px;font:700 12px var(--body);cursor:pointer}
+    .plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.plan-card{border:1px solid var(--border);border-radius:12px;padding:18px;background:var(--surface2);position:relative}
+    .plan-card.current{border:2px solid var(--brand);background:var(--brand-light)}.plan-name{font:700 17px var(--display);margin-bottom:5px}.plan-price{font:700 25px var(--display);margin:10px 0}.plan-price small{font:500 11px var(--body);color:var(--muted)}
+    .plan-features{list-style:none;padding:0;margin:14px 0 18px;display:grid;gap:8px;color:var(--muted);font-size:12px}.plan-features li:before{content:"✓";color:var(--brand);font-weight:800;margin-right:7px}
+    .plan-button{width:100%;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:9px;border-radius:8px;font:700 12px var(--body);cursor:pointer}
+    .current-badge{position:absolute;top:12px;right:12px;background:var(--brand);color:#fff;border-radius:20px;padding:3px 7px;font:700 8px var(--mono)}
+    .usage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.usage-stat{border:1px solid var(--border);background:var(--surface2);border-radius:10px;padding:16px}.usage-stat span{display:block;font:700 9px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}.usage-stat strong{font:700 22px var(--display)}
+    .theme-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}.theme-option{border:1px solid var(--border);border-radius:10px;padding:15px;cursor:pointer;background:var(--surface2)}.theme-option.selected{border:2px solid var(--brand)}
+    .settings-note{padding:12px 14px;border:1px solid #fde3a7;background:#fff9eb;border-radius:8px;color:#7a5b12;font-size:12px;line-height:1.55}
+    @media(max-width:900px){.settings-layout{grid-template-columns:1fr}.settings-tabs{position:static;display:flex;overflow:auto}.settings-tab{white-space:nowrap}.settings-grid,.plan-grid,.usage-grid{grid-template-columns:1fr}}
+
+
+    /* SETTINGS POLISH V2 */
+    #settingsView{max-width:1320px;margin:0 auto;padding-bottom:48px}
+    #settingsView .view-header{margin-bottom:26px}
+    #settingsView .view-header h1{margin:5px 0 8px;font-size:34px;line-height:1.12}
+    #settingsView .view-header p:last-child{max-width:720px;margin:0;font-size:14px;line-height:1.6}
+
+    .settings-layout{grid-template-columns:235px minmax(0,1fr);gap:24px}
+    .settings-tabs{padding:10px;border-radius:14px;box-shadow:var(--shadow)}
+    .settings-tab{min-height:44px;padding:12px 14px;border-radius:9px;font-size:13px}
+    .settings-tab.active{background:var(--brand-light);color:var(--brand-dark);box-shadow:inset 3px 0 0 var(--brand)}
+
+    .settings-card{padding:26px;border-radius:14px}
+    .settings-card h2{font-size:20px;color:var(--text)}
+    .settings-card-desc{margin-bottom:24px;line-height:1.55}
+    .settings-grid{gap:20px 22px}
+    .settings-field{gap:8px}
+    .settings-field label{font-size:10px;color:var(--muted)}
+
+    .settings-input,.settings-select{
+      min-height:44px;
+      padding:11px 13px;
+      border:1px solid var(--border);
+      background:var(--surface);
+      color:var(--text);
+      border-radius:9px;
+      box-shadow:0 1px 2px rgba(15,23,42,.04);
+    }
+    .settings-input::placeholder{color:var(--muted);opacity:.72}
+    .settings-input:hover,.settings-select:hover{border-color:#aab6c8}
+    .settings-input:focus,.settings-select:focus{
+      border-color:var(--brand);
+      box-shadow:0 0 0 3px rgba(45,196,181,.14);
+      background:var(--surface);
+    }
+
+    .settings-actions{padding-top:4px}
+    .settings-save{min-height:40px;padding:10px 18px;box-shadow:0 5px 14px rgba(45,196,181,.18)}
+    .settings-note{margin-top:14px}
+
+    .theme-options{gap:16px}
+    .theme-option{min-height:92px;padding:18px;border-radius:12px;display:flex;flex-direction:column;justify-content:center}
+    .theme-option strong{font:700 16px var(--display);color:var(--text);margin-bottom:6px}
+    .theme-option.selected{box-shadow:0 0 0 3px rgba(45,196,181,.10)}
+
+    .usage-grid{gap:16px}
+    .usage-stat{padding:20px;border-radius:12px}
+    .usage-stat strong{color:var(--text)}
+
+    .plan-grid{gap:16px}
+    .plan-card{padding:20px;border-radius:14px}
+    .plan-name,.plan-price{color:var(--text)}
+    .plan-button{min-height:40px}
+
+    /* Real dark-mode contrast instead of only swapping six variables */
+    html[data-codesentry-theme="dark"]{
+      --bg:#0b1220;
+      --surface:#111a2b;
+      --surface2:#172236;
+      --text:#edf3ff;
+      --muted:#aebbd0;
+      --border:#2a3950;
+      --brand-light:#153b3d;
+      --brand-dark:#5ee4d7;
+      --shadow:0 8px 24px rgba(0,0,0,.22);
+    }
+    html[data-codesentry-theme="dark"] body,
+    html[data-codesentry-theme="dark"] main{background:var(--bg);color:var(--text)}
+    html[data-codesentry-theme="dark"] h1,
+    html[data-codesentry-theme="dark"] h2,
+    html[data-codesentry-theme="dark"] h3,
+    html[data-codesentry-theme="dark"] strong,
+    html[data-codesentry-theme="dark"] .settings-card h2,
+    html[data-codesentry-theme="dark"] .plan-name,
+    html[data-codesentry-theme="dark"] .plan-price{color:var(--text)!important}
+    html[data-codesentry-theme="dark"] .view-header p,
+    html[data-codesentry-theme="dark"] .settings-card-desc,
+    html[data-codesentry-theme="dark"] .settings-field label,
+    html[data-codesentry-theme="dark"] .theme-option span,
+    html[data-codesentry-theme="dark"] .plan-features{color:var(--muted)!important}
+    html[data-codesentry-theme="dark"] .settings-card,
+    html[data-codesentry-theme="dark"] .settings-tabs,
+    html[data-codesentry-theme="dark"] .plan-card,
+    html[data-codesentry-theme="dark"] .usage-stat,
+    html[data-codesentry-theme="dark"] .theme-option{background:var(--surface);border-color:var(--border)}
+    html[data-codesentry-theme="dark"] .settings-input,
+    html[data-codesentry-theme="dark"] .settings-select{
+      background:#0d1728;
+      color:#f4f7fb;
+      border-color:#3a4b65;
+      box-shadow:none;
+    }
+    html[data-codesentry-theme="dark"] .settings-input::placeholder{color:#8493aa;opacity:1}
+    html[data-codesentry-theme="dark"] .settings-input:focus,
+    html[data-codesentry-theme="dark"] .settings-select:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(45,196,181,.18)}
+    html[data-codesentry-theme="dark"] .settings-tab{color:#b7c3d6}
+    html[data-codesentry-theme="dark"] .settings-tab:hover{background:#18253a;color:#fff}
+    html[data-codesentry-theme="dark"] .settings-tab.active{background:#153b3d;color:#69eadf}
+    html[data-codesentry-theme="dark"] .settings-note{background:#2a2414;border-color:#665522;color:#f3d889}
+    html[data-codesentry-theme="dark"] .plan-card.current{background:#123335;border-color:var(--brand)}
+    html[data-codesentry-theme="dark"] .plan-button{background:#18253a;border-color:#3a4b65;color:#edf3ff}
+
+    @media(max-width:900px){
+      #settingsView{padding-left:0;padding-right:0}
+      .settings-layout{grid-template-columns:1fr}
+      .settings-tabs{position:static}
+      .settings-card{padding:20px}
+    }
+
+
+  /* REPOSITORY-CONTEXT WORKSPACE */
+  .repo-context-layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:18px;align-items:start;margin-top:22px}
+  .repo-context-directory,.repo-context-workspace{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-sm)}
+  .repo-context-directory{padding:14px;position:sticky;top:20px}
+  .repo-context-directory-head{padding:4px 4px 12px;border-bottom:1px solid var(--line);margin-bottom:10px}
+  .repo-context-directory-head strong{display:block;font:700 14px var(--display);color:var(--ink)}
+  .repo-context-directory-head span{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+  .repo-context-item{width:100%;display:flex;align-items:center;gap:10px;padding:10px;margin-bottom:6px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--ink);text-align:left;cursor:pointer}
+  .repo-context-item:hover{background:var(--bg)}
+  .repo-context-item.active{background:var(--brand-soft);border-color:rgba(46,196,182,.35)}
+  .repo-context-icon{width:38px;height:38px;border-radius:10px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .repo-context-item-name{display:block;font:650 12px var(--body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .repo-context-item-meta{display:block;margin-top:4px;color:var(--muted);font:500 9px var(--mono)}
+  .repo-context-workspace{padding:20px;min-height:460px}
+  .repo-context-empty{padding:70px 20px;text-align:center;color:var(--muted)}
+  .repo-context-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+  .repo-context-title{display:flex;align-items:flex-start;gap:14px;min-width:0}
+  .repo-context-title h2{margin:0;font:700 24px var(--display);color:var(--ink);overflow-wrap:anywhere}
+  .repo-context-title p{margin:6px 0 0;color:var(--muted);font:500 10px var(--mono);overflow-wrap:anywhere}
+  .repo-context-tabs{display:flex;gap:7px;flex-wrap:wrap;padding:16px 0;border-bottom:1px solid var(--line)}
+  .repo-context-tab{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:9px;padding:9px 13px;cursor:pointer;font:700 11px var(--body)}
+  .repo-context-tab:hover{border-color:var(--brand)}
+  .repo-context-tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
+  .repo-context-content{padding-top:18px}
+  .repo-context-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .repo-context-metric{border:1px solid var(--line);border-radius:12px;padding:15px;background:var(--panel-2)}
+  .repo-context-metric span{display:block;font:600 9px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+  .repo-context-metric strong{display:block;margin-top:7px;font:700 21px var(--display);color:var(--ink)}
+  .repo-context-list-card{border:1px solid var(--line);border-radius:11px;padding:14px;margin-bottom:10px;background:var(--panel);cursor:pointer}
+  .repo-context-list-card:hover{border-color:var(--brand);box-shadow:var(--shadow-sm)}
+  .repo-context-analytics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+  .repo-context-dist{display:grid;gap:12px}
+  .repo-context-dist-row{display:grid;grid-template-columns:70px 1fr 35px;gap:10px;align-items:center;font-size:12px}
+  .repo-context-track{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+  .repo-context-fill{height:100%;background:var(--brand);border-radius:99px}
+  body[data-theme="dark"] .repo-context-directory,
+  body[data-theme="dark"] .repo-context-workspace,
+  body[data-theme="dark"] .repo-context-tab,
+  body[data-theme="dark"] .repo-context-list-card{background:var(--panel);border-color:var(--line)}
+  body[data-theme="dark"] .repo-context-title h2,
+  body[data-theme="dark"] .repo-context-directory-head strong,
+  body[data-theme="dark"] .repo-context-metric strong{color:var(--ink)}
+  @media(max-width:1000px){.repo-context-layout{grid-template-columns:1fr}.repo-context-directory{position:static}.repo-context-metrics,.repo-context-analytics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:650px){.repo-context-metrics,.repo-context-analytics{grid-template-columns:1fr}.repo-context-header{flex-direction:column}}
+
+
+  /* REPOSITORY TREE IN MAIN SIDEBAR */
+  .repo-sidebar-tree{margin:4px 0 8px 18px;padding-left:10px;border-left:1px solid rgba(255,255,255,.10)}
+  .repo-sidebar-loading{padding:8px 10px;color:#7180aa;font:500 10px var(--mono)}
+  .repo-sidebar-repo{margin:4px 0}
+  .repo-sidebar-repo-btn{width:100%;display:flex;align-items:center;gap:9px;padding:10px 10px;border:0;border-radius:9px;background:transparent;color:#aeb8dc;cursor:pointer;text-align:left;font:700 13px var(--body)}
+  .repo-sidebar-repo-btn:hover,.repo-sidebar-repo-btn.active{background:rgba(46,196,182,.10);color:#dffbf7}
+  .repo-sidebar-repo-icon{width:24px;height:24px;border-radius:7px;background:rgba(46,196,182,.12);color:#2ec4b6;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .repo-sidebar-repo-name{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .repo-sidebar-chevron{font-size:9px;color:#7180aa;transition:transform .15s ease}
+  .repo-sidebar-repo.open .repo-sidebar-chevron{transform:rotate(90deg)}
+  .repo-sidebar-subnav{display:none;margin:3px 0 5px 31px}
+  .repo-sidebar-repo.open .repo-sidebar-subnav{display:block}
+  .repo-sidebar-subnav button{width:100%;display:flex;align-items:center;gap:9px;padding:9px 10px;border:0;border-radius:7px;background:transparent;color:#8fa0d4;cursor:pointer;text-align:left;font:600 13px var(--body)}
+  .repo-sidebar-subnav button:hover{color:#dffbf7;background:rgba(255,255,255,.04)}
+  .repo-sidebar-subnav button.active{color:#2ec4b6;background:rgba(46,196,182,.10)}
+
+
+  .repo-sidebar-subnav-icon{width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;color:currentColor}
+  .repo-sidebar-subnav-icon svg{display:block}
+  .repo-sidebar-repo-name{font-size:13px}
+
 </style>
 <link rel="stylesheet" href="css/modal.css">
 <link rel="stylesheet" href="css/report.css">
@@ -202,15 +404,34 @@
       <svg class="brand-shield" viewBox="0 0 24 26" fill="none"><path d="M12 1L2 5v7c0 6.5 4.3 10.8 10 12 5.7-1.2 10-5.5 10-12V5L12 1z" fill="#2ec4b6"/></svg>
       <div><div class="brand-name">CodeSentry</div><div class="brand-sub">AI CODE REVIEWER</div></div>
     </div>
-    <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
-    <div class="nav-item" onclick="showRepositoriesView()">
+    <div class="nav-item active" onclick="showDashboardView()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <rect x="3" y="3" width="7" height="7" rx="1"/>
+    <rect x="14" y="3" width="7" height="7" rx="1"/>
+    <rect x="3" y="14" width="7" height="7" rx="1"/>
+    <rect x="14" y="14" width="7" height="7" rx="1"/>
+  </svg>
+  Dashboard
+</div>
+    <div id="repositoriesNavButton" class="nav-item" onclick="toggleRepositoriesSidebar()">
+    <svg viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2"
+         stroke-linecap="round"
+         stroke-linejoin="round">
+        <path d="M3 5a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v12H3z"/>
+    </svg>
     <span>Repositories</span>
 </div>
-    <div class="nav-item disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Scan History<span class="soon">SOON</span></div>
-    <div class="nav-item disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 2 5-6"/></svg>Analytics<span class="soon">SOON</span></div>
+<div id="repositorySidebarTree" class="repo-sidebar-tree" style="display:none;">
+  <div id="repositorySidebarList">
+    <div class="repo-sidebar-loading">Loading repositories...</div>
+  </div>
+</div>
+
     <div class="nav-item disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.5 8.5 0 0 1-4-1L3 20l1.1-5A8.4 8.4 0 0 1 21 11.5z"/></svg>AI Chat<span class="soon">SOON</span></div>
-    <div class="nav-item disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Reports<span class="soon">SOON</span></div>
-    <div class="nav-item disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>Settings<span class="soon">SOON</span></div>
+    <div class="nav-item" onclick="showSettingsView()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>Settings</div>
 
     <div class="sidebar-section-label">Recent scans (this session)</div>
     <div id="recentScans"><div class="rs-empty">No scans run yet</div></div>
@@ -239,9 +460,15 @@
     </div>
 
     <div class="scan-bar">
-      <svg class="folder" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h6l2 2h8v12H4z"/></svg>
+      <svg class="folder" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 4h6l2 2h8v12H4z"/>
+      </svg>
       <input id="repoUrl" type="text" placeholder="https://github.com/owner/repo.git" value="https://github.com/pallets/flask.git">
-      <button id="runBtn" onclick="runReview()">Run review</button>
+      <select id="reviewMode" class="sort-select" onchange="updateReviewMode()" style="min-width:170px;">
+        <option value="full">Full Repository</option>
+        <option value="incremental">Changed Code Only</option>
+      </select>
+      <button type="button" id="runBtn" onclick="runReview()">Run review</button>
     </div>
     <div class="scan-note">Sends to <span id="endpointLabel"></span></div>
 
@@ -293,27 +520,220 @@
         </div>
       </div>
     </div>
-    <section id="repositoriesView" style="display: none;">
-    <div class="page-header">
-        <div>
-            <p class="eyebrow">REPOSITORY MANAGEMENT</p>
-            <h1>Repositories</h1>
-            <p>Previously scanned repositories</p>
-        </div>
+    <section id="repositoriesView" style="display:none;">
+  <div class="view-header">
+    <p class="eyebrow">REPOSITORY MANAGEMENT</p>
+    <h1>Repositories</h1>
+    <p style="color:var(--muted);">
+      Select a repository to inspect its overview, scan history,
+      reports and analytics.
+    </p>
+  </div>
+
+  <div class="repo-context-layout">
+    <aside class="repo-context-directory">
+      <div class="repo-context-directory-head">
+        <strong>Your repositories</strong>
+        <span id="repoDirectoryCount">Loading...</span>
+      </div>
+      <div id="repositoriesList">
+        <p class="empty-note">Loading repositories...</p>
+      </div>
+    </aside>
+
+    <div id="repositoryWorkspace" class="repo-context-workspace">
+      <div class="repo-context-empty">
+        Select a repository to open its workspace.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Dedicated Scan History View -->
+<section id="scanHistoryView" style="display: none;">
+  <div class="view-header">
+    <p class="eyebrow">SCAN HISTORY</p>
+    <h1>Scan History</h1>
+    <p>View and reopen previous CodeSentry repository scans.</p>
+  </div>
+
+  <div id="scanHistoryList">
+    <p class="empty-note">Loading scan history...</p>
+  </div>
+</section>
+
+<!-- Dedicated Analytics View -->
+<section id="analyticsView" style="display: none;">
+  <div class="view-header">
+    <p class="eyebrow">REPOSITORY ANALYTICS</p>
+    <h1>Analytics</h1>
+    <p style="color:var(--muted);">
+      Persistent insights across all saved CodeSentry scans.
+    </p>
+  </div>
+
+  <div class="grid4 active" id="analyticsSummaryCards" style="margin-top:22px;">
+    <div class="ocard">
+      <div class="stat-num">—</div>
+      <div class="stat-label">Total scans</div>
     </div>
 
-    <div id="repositoriesList">
-        <p>Loading repositories...</p>
+    <div class="ocard">
+      <div class="stat-num">—</div>
+      <div class="stat-label">Average risk score</div>
     </div>
+
+    <div class="ocard">
+      <div class="stat-num">—</div>
+      <div class="stat-label">High risk scans</div>
+    </div>
+
+    <div class="ocard">
+      <div class="stat-num">—</div>
+      <div class="stat-label">Repositories tracked</div>
+    </div>
+  </div>
+
+  <div class="grid3 active" id="analyticsChartsRow">
+    <div class="panel">
+      <div class="panel-title">Risk distribution</div>
+      <div class="panel-subtitle">
+        Saved scans grouped by repository risk band.
+      </div>
+      <div id="analyticsRiskDistribution">
+        <p class="empty-note">Loading analytics...</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Risk trend</div>
+      <div class="panel-subtitle">
+        Repository risk scores across saved scans.
+      </div>
+      <div id="analyticsPersistentTrend">
+        <p class="empty-note">Loading trend...</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Analytics summary</div>
+      <div class="panel-subtitle">
+        Overall CodeSentry scan activity.
+      </div>
+      <div id="analyticsInsights">
+        <p class="empty-note">Loading insights...</p>
+      </div>
+    </div>
+  </div>
 </section>
+
+<!-- Dedicated Reports Center View -->
+<section id="reportsCenterView" style="display: none;">
+  <div class="view-header">
+    <p class="eyebrow">SAVED REPORTS</p>
+    <h1>Reports Center</h1>
+    <p style="color:var(--muted);">
+      Browse and reopen persisted CodeSentry scan reports.
+    </p>
+  </div>
+
+  <div class="file-panel" style="margin-top:22px;">
+    <div class="file-toolbar">
+      <div class="search-box" style="max-width:320px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="reportsSearchInput" type="text" placeholder="Search repositories..." oninput="filterReportsCenter()">
+      </div>
+
+      <select class="sort-select" id="reportsSortSelect" onchange="filterReportsCenter()">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+        <option value="risk-desc">Risk score (high → low)</option>
+        <option value="name-asc">Repository (A → Z)</option>
+      </select>
+    </div>
+
+    <div class="result-count" id="reportsResultCount"></div>
+    <div id="reportsCenterList">
+      <p class="empty-note">Loading saved reports...</p>
+    </div>
+  </div>
+</section>
+
+<!-- Dedicated Settings View -->
+<section id="settingsView" style="display:none;">
+  <div class="view-header"><p class="eyebrow">ACCOUNT & WORKSPACE</p><h1>Settings</h1><p style="color:var(--muted);">Manage your CodeSentry profile, workspace preferences, usage and plan.</p></div>
+  <div class="settings-layout" style="margin-top:22px;">
+    <nav class="settings-tabs">
+      <button class="settings-tab active" onclick="showSettingsPanel('general',this)">General</button>
+      <button class="settings-tab" onclick="showSettingsPanel('workspace',this)">Workspace</button>
+      <button class="settings-tab" onclick="showSettingsPanel('review',this)">AI Review</button>
+      <button class="settings-tab" onclick="showSettingsPanel('appearance',this)">Appearance</button>
+      <button class="settings-tab" onclick="showSettingsPanel('usage',this)">Usage</button>
+      <button class="settings-tab" onclick="showSettingsPanel('billing',this)">Plan & Billing</button>
+    </nav>
+    <div>
+      <section id="settings-general" class="settings-panel active"><div class="settings-card"><h2>General profile</h2><p class="settings-card-desc">Basic details shown in your local CodeSentry workspace.</p><div class="settings-grid">
+        <div class="settings-field"><label>Full name</label><input id="settingFullName" class="settings-input" placeholder="Your name"></div>
+        <div class="settings-field"><label>Email</label><input id="settingEmail" class="settings-input" type="email" placeholder="you@example.com"></div>
+        <div class="settings-field"><label>Role / title</label><input id="settingRole" class="settings-input" placeholder="Developer"></div>
+        <div class="settings-field"><label>Organization</label><input id="settingOrganization" class="settings-input" placeholder="Organization name"></div>
+      </div><div class="settings-actions"><button class="settings-save" onclick="saveGeneralSettings()">Save profile</button></div></div>
+      <div class="settings-note">Profile details are stored in this browser. Authenticated server-side user accounts are not implemented yet.</div></section>
+
+      <section id="settings-workspace" class="settings-panel"><div class="settings-card"><h2>Workspace preferences</h2><p class="settings-card-desc">Defaults used in this CodeSentry dashboard.</p><div class="settings-grid">
+        <div class="settings-field"><label>Workspace name</label><input id="settingWorkspaceName" class="settings-input" placeholder="e.g. Teesha\'s CodeSentry Workspace"><small style="color:var(--muted);font-size:11px;line-height:1.4;">Used as the local display name for this workspace.</small></div>
+        <div class="settings-field"><label>Default report sorting</label><select id="settingReportSort" class="settings-select"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="risk-desc">Risk high to low</option><option value="name-asc">Repository A to Z</option></select></div>
+      </div><div class="settings-actions"><button class="settings-save" onclick="saveWorkspaceSettings()">Save workspace</button></div></div></section>
+
+      <section id="settings-review" class="settings-panel"><div class="settings-card"><h2>AI review preferences</h2><p class="settings-card-desc">Set defaults for review controls already supported by CodeSentry.</p><div class="settings-grid">
+        <div class="settings-field"><label>Default review mode</label><select id="settingReviewMode" class="settings-select"><option value="full">Full Repository</option><option value="incremental">Changed Code Only</option></select></div>
+        <div class="settings-field"><label>Default file sorting</label><select id="settingFileSort" class="settings-select"><option value="risk-desc">Risk high to low</option><option value="risk-asc">Risk low to high</option><option value="name-asc">Name A to Z</option></select></div>
+      </div><div class="settings-actions"><button class="settings-save" onclick="saveReviewSettings()">Save review preferences</button></div></div></section>
+
+      <section id="settings-appearance" class="settings-panel"><div class="settings-card"><h2>Appearance</h2><p class="settings-card-desc">Choose how CodeSentry looks in this browser.</p><div class="theme-options">
+        <div id="themeLightOption" class="theme-option selected" onclick="setCodeSentryTheme('light')"><strong>Light</strong><br><span style="color:var(--muted);font-size:12px;">Current dashboard palette</span></div>
+        <div id="themeDarkOption" class="theme-option" onclick="setCodeSentryTheme('dark')"><strong>Dark</strong><br><span style="color:var(--muted);font-size:12px;">Dark workspace palette</span></div>
+      </div></div></section>
+
+      <section id="settings-usage" class="settings-panel"><div class="settings-card"><h2>Usage</h2><p class="settings-card-desc">Live totals derived from your existing backend.</p><div class="usage-grid">
+        <div class="usage-stat"><span>Total scans</span><strong id="usageTotalScans">—</strong></div><div class="usage-stat"><span>Saved reports</span><strong id="usageSavedReports">—</strong></div><div class="usage-stat"><span>Repositories</span><strong id="usageRepositories">—</strong></div>
+      </div></div></section>
+
+      <section id="settings-billing" class="settings-panel"><div class="settings-card"><h2>Plan & billing</h2><p class="settings-card-desc">Choose the workspace tier that fits your review workflow.</p>
+        <div class="settings-note" style="margin-bottom:16px;">Checkout is not connected yet. These upgrade controls are a product demo and do not process payments.</div>
+        <div class="plan-grid">
+          <article class="plan-card current" data-plan="free"><span class="current-badge">CURRENT</span><div class="plan-name">Free</div><div class="plan-price">₹0 <small>/ month</small></div><ul class="plan-features"><li>Public repository reviews</li><li>Saved scan reports</li><li>Core risk analytics</li></ul><button class="plan-button" onclick="selectDemoPlan('free')">Current plan</button></article>
+          <article class="plan-card" data-plan="pro"><div class="plan-name">Pro</div><div class="plan-price">₹799 <small>/ month</small></div><ul class="plan-features"><li>Higher scan allowance</li><li>Advanced report exports</li><li>Priority review queue</li></ul><button class="plan-button" onclick="selectDemoPlan('pro')">Choose Pro</button></article>
+          <article class="plan-card" data-plan="team"><div class="plan-name">Team</div><div class="plan-price">₹1,999 <small>/ month</small></div><ul class="plan-features"><li>Shared team workspace</li><li>Centralized scan history</li><li>Team usage visibility</li></ul><button class="plan-button" onclick="selectDemoPlan('team')">Choose Team</button></article>
+        </div>
+      </div></section>
+    </div>
+  </div>
+</section>
+
 <!-- Dedicated Saved Report View -->
 <div id="reportView" class="report-view" style="display: none;"></div>
   </div>
 
 <script>
 const API_BASE = "http://127.0.0.1:8000";
-const ENDPOINT = `${API_BASE}/review-repository`;
+let ENDPOINT = `${API_BASE}/review-repository`;
 document.getElementById('endpointLabel').textContent = ENDPOINT;
+
+function updateReviewMode(){
+  const mode = document.getElementById('reviewMode').value;
+
+  ENDPOINT = mode === 'incremental'
+    ? `${API_BASE}/review-repository/incremental`
+    : `${API_BASE}/review-repository`;
+
+  document.getElementById('endpointLabel').textContent = ENDPOINT;
+
+  const runBtn = document.getElementById('runBtn');
+  runBtn.textContent = mode === 'incremental'
+    ? 'Review changes'
+    : 'Run review';
+}
 
 let lastData = null;
 let currentBandFilter = 'all';
@@ -533,39 +953,274 @@ function rowBadges(scoring){
   return parts.join('');
 }
 
-function renderFileRow(entry, idx){
-  const scoring = entry.scoring || {};
-  const parsed = extractJson(entry.review);
-  const shortPath = (entry.file||'').split(/[\\\/]/).slice(-2).join('/');
-  const rowId = 'frow-' + shortPath.replace(/[^a-z0-9]/gi,'_') + '-' + idx;
-
-  let body;
-  if(!parsed){
-    body = `<div class="error-box">${(entry.review||'No review text.').slice(0,800)}</div>`;
-  } else {
-    body = `
-      <p class="f-summary-full">${parsed.summary||''}</p>
-      <div class="section"><div class="section-title"><span class="dot high"></span>Bugs</div>${issueList(parsed.bugs)}</div>
-      <div class="section"><div class="section-title"><span class="dot high"></span>Security</div>${issueList(parsed.security)}</div>
-      <div class="section"><div class="section-title"><span class="dot medium"></span>Performance</div>${issueList(parsed.performance)}</div>
-      <div class="section"><div class="section-title"><span class="dot low"></span>Clean code notes</div>${plainList(parsed.clean_code)}</div>
-      <div class="section"><div class="section-title"><span class="dot neutral"></span>Best practices</div>${plainList(parsed.best_practices)}</div>
-    `;
+function renderAffectedFunctions(entry){
+  if(
+    entry.review_scope !== "affected_functions" ||
+    !Array.isArray(entry.changed_functions) ||
+    entry.changed_functions.length === 0
+  ){
+    return "";
   }
 
   return `
-    <div class="frow" id="${rowId}">
-      <div class="frow-head" onclick="document.getElementById('${rowId}').classList.toggle('open')">
-        <div class="file-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
-        <div class="f-info">
-          <div class="f-path">${shortPath}</div>
-          <div class="f-summary">${parsed ? (parsed.summary||'') : 'Could not parse review output'}</div>
-        </div>
-        <div class="f-badges">${rowBadges(scoring)}</div>
-        ${ringSvg(scoring.risk_score, scoring.risk_band, 38)}
-        <div class="f-chevron">&#9656;</div>
+    <div class="section">
+      <div class="section-title">
+        <span class="dot neutral"></span>
+        Affected Functions
       </div>
-      <div class="f-body">${body}</div>
+
+      ${entry.changed_functions.map(fn => `
+        <div class="issue none">
+          <strong>${escapeHtml(fn.name || "Unknown function")}</strong>
+          <span style="color:var(--muted);">
+            · Lines ${fn.start_line ?? "?"}–${fn.end_line ?? "?"}
+          </span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderFileRow(entry, idx){
+  const scoring = entry.scoring || {};
+  const isIncremental =
+    entry.review_scope === "affected_functions" &&
+    Array.isArray(entry.review);
+
+  const parsed = isIncremental
+    ? null
+    : extractJson(entry.review);
+
+  const shortPath = (entry.file || '')
+    .split(/[\\\/]/)
+    .slice(-2)
+    .join('/');
+
+  const rowId =
+    'frow-' +
+    shortPath.replace(/[^a-z0-9]/gi, '_') +
+    '-' +
+    idx;
+
+  let body;
+
+  if(isIncremental){
+    const functionReviews = entry.review || [];
+
+    body = `
+      ${renderAffectedFunctions(entry)}
+
+      ${functionReviews.map(fnReview => {
+        const parsedFunctionReview =
+          extractJson(fnReview.review);
+
+        if(!parsedFunctionReview){
+          return `
+            <div class="section">
+              <div class="section-title">
+                <span class="dot neutral"></span>
+                ${escapeHtml(fnReview.name || "Unknown function")}
+              </div>
+
+              <div class="error-box">
+                Could not parse function review output.
+              </div>
+            </div>
+          `;
+        }
+
+        const findings =
+          parsedFunctionReview.findings || [];
+
+        const bugs = findings.filter(
+          f => f.category === "bug"
+        );
+
+        const security = findings.filter(
+          f => f.category === "security"
+        );
+
+        const performance = findings.filter(
+          f => f.category === "performance"
+        );
+
+        return `
+          <div class="section">
+            <div class="section-title">
+              <span class="dot neutral"></span>
+              Function Review:
+              ${escapeHtml(fnReview.name || "Unknown")}
+            </div>
+
+            <p class="f-summary-full">
+              ${escapeHtml(
+                parsedFunctionReview.summary || ""
+              )}
+            </p>
+
+            <div class="section">
+              <div class="section-title">
+                <span class="dot high"></span>
+                Bugs
+              </div>
+              ${issueList(bugs)}
+            </div>
+
+            <div class="section">
+              <div class="section-title">
+                <span class="dot high"></span>
+                Security
+              </div>
+              ${issueList(security)}
+            </div>
+
+            <div class="section">
+              <div class="section-title">
+                <span class="dot medium"></span>
+                Performance
+              </div>
+              ${issueList(performance)}
+            </div>
+
+            <div class="section">
+              <div class="section-title">
+                <span class="dot low"></span>
+                Clean code notes
+              </div>
+              ${plainList(
+                parsedFunctionReview.clean_code
+              )}
+            </div>
+
+            <div class="section">
+              <div class="section-title">
+                <span class="dot neutral"></span>
+                Best practices
+              </div>
+              ${plainList(
+                parsedFunctionReview.best_practices
+              )}
+            </div>
+          </div>
+        `;
+      }).join("")}
+    `;
+  } else if(!parsed){
+    body = `
+      <div class="error-box">
+        ${escapeHtml(
+          String(entry.review || "No review text.")
+            .slice(0, 800)
+        )}
+      </div>
+    `;
+  } else {
+    body = `
+      <p class="f-summary-full">
+        ${escapeHtml(parsed.summary || "")}
+      </p>
+
+      <div class="section">
+        <div class="section-title">
+          <span class="dot high"></span>
+          Bugs
+        </div>
+        ${issueList(parsed.bugs)}
+      </div>
+
+      <div class="section">
+        <div class="section-title">
+          <span class="dot high"></span>
+          Security
+        </div>
+        ${issueList(parsed.security)}
+      </div>
+
+      <div class="section">
+        <div class="section-title">
+          <span class="dot medium"></span>
+          Performance
+        </div>
+        ${issueList(parsed.performance)}
+      </div>
+
+      <div class="section">
+        <div class="section-title">
+          <span class="dot low"></span>
+          Clean code notes
+        </div>
+        ${plainList(parsed.clean_code)}
+      </div>
+
+      <div class="section">
+        <div class="section-title">
+          <span class="dot neutral"></span>
+          Best practices
+        </div>
+        ${plainList(parsed.best_practices)}
+      </div>
+    `;
+  }
+
+  const summaryText = isIncremental
+    ? (
+        scoring.summary ||
+        `${entry.changed_functions?.length || 0} affected function(s) reviewed`
+      )
+    : (
+        parsed
+          ? parsed.summary || ''
+          : 'Could not parse review output'
+      );
+
+  return `
+    <div class="frow" id="${rowId}">
+      <div
+        class="frow-head"
+        onclick="document.getElementById('${rowId}').classList.toggle('open')"
+      >
+        <div class="file-icon">
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <path d="M14 2v6h6"/>
+          </svg>
+        </div>
+
+        <div class="f-info">
+          <div class="f-path">
+            ${escapeHtml(shortPath)}
+          </div>
+
+          <div class="f-summary">
+            ${escapeHtml(summaryText)}
+          </div>
+        </div>
+
+        <div class="f-badges">
+          ${rowBadges(scoring)}
+        </div>
+
+        ${ringSvg(
+          scoring.risk_score,
+          scoring.risk_band,
+          38
+        )}
+
+        <div class="f-chevron">
+          &#9656;
+        </div>
+      </div>
+
+      <div class="f-body">
+        ${body}
+      </div>
     </div>
   `;
 }
@@ -617,9 +1272,12 @@ async function runReview(){
   } catch(err){
     showError(err.message + " — check your backend is running.");
   } finally {
-    btn.disabled = false; btn.textContent = 'Run review';
+    btn.disabled = false;
+    updateReviewMode();
   }
 }
+
+updateReviewMode();
 
 function renderSidebarScans(){
   const el = document.getElementById('recentScans');
@@ -736,12 +1394,40 @@ function renderResult(data, elapsedSeconds){
   document.getElementById('contentRow').className = 'content-row active';
   applyFilters();
 }
+function setActiveNav(label) {
+  document.querySelectorAll(".nav-item:not(.disabled)").forEach(item => {
+    item.classList.toggle(
+      "active",
+      item.textContent.trim() === label
+    );
+  });
+}
+
+function hideDedicatedViews() {
+  ["repositoriesView", "scanHistoryView", "analyticsView", "reportsCenterView", "settingsView", "reportView"]
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = "none";
+    });
+}
+
 function showDashboardView() {
-    document.getElementById("repositoriesView").style.display = "none";
-    document.getElementById("emptyState").style.display = lastData ? "none" : "block";
-    document.getElementById("overviewCards").style.display = "";
-    document.getElementById("analyticsRow").style.display = "";
-    document.getElementById("contentRow").style.display = "";
+  console.log("Opening Dashboard view");
+
+  hideDedicatedViews();
+  setActiveNav("Dashboard");
+
+  document.getElementById("emptyState").style.display =
+    lastData ? "none" : "block";
+
+  document.getElementById("overviewCards").style.display =
+    lastData ? "grid" : "none";
+
+  document.getElementById("analyticsRow").style.display =
+    lastData ? "grid" : "none";
+
+  document.getElementById("contentRow").style.display =
+    lastData ? "grid" : "none";
 }
 
 async function showRepositoriesView() {
@@ -758,6 +1444,9 @@ async function showRepositoriesView() {
         );
         return;
     }
+
+    hideDedicatedViews();
+    setActiveNav("Repositories");
 
     // Hide dashboard result sections while repository management is open.
     document.getElementById("emptyState").style.display = "none";
@@ -788,39 +1477,283 @@ async function showRepositoriesView() {
     }
 }
 
+async function showScanHistory() {
+  console.log("Opening dedicated Scan History view");
+
+  const repositoriesView = document.getElementById("repositoriesView");
+  const scanHistoryView = document.getElementById("scanHistoryView");
+  const reportView = document.getElementById("reportView");
+  const scanHistoryList = document.getElementById("scanHistoryList");
+
+  // Hide dashboard and other dedicated views
+  hideDedicatedViews();
+  setActiveNav("Scan History");
+  document.getElementById("emptyState").style.display = "none";
+  document.getElementById("overviewCards").style.display = "none";
+  document.getElementById("analyticsRow").style.display = "none";
+  document.getElementById("contentRow").style.display = "none";
+
+  // Show Scan History
+  if (scanHistoryView) scanHistoryView.style.display = "block";
+
+  scanHistoryList.innerHTML =
+    `<p class="empty-note">Loading scan history...</p>`;
+
+  try {
+    const response = await fetch(`${API_BASE}/scans`);
+
+    if (!response.ok) {
+      throw new Error("Failed to load scan history");
+    }
+
+    const data = await response.json();
+const scans = data.scans || [];
+
+    console.log("Loaded scans:", scans);
+
+    if (!scans || scans.length === 0) {
+      scanHistoryList.innerHTML =
+        `<p class="empty-note">No saved scans found.</p>`;
+      return;
+    }
+
+    scanHistoryList.innerHTML = scans.map(scan => `
+      <div class="repo-card"
+           onclick="openSavedReport(${scan.id})"
+           style="cursor:pointer; margin-bottom:16px;">
+
+        <div>
+          <h3>${escapeHtml(scan.repository || "Unknown Repository")}</h3>
+
+          <p>
+            <strong>Risk Score:</strong>
+            ${scan.repository_risk_score ?? "N/A"}
+          </p>
+
+          <p>
+            <strong>Risk Band:</strong>
+            ${escapeHtml(scan.repository_risk_band || "Unknown")}
+          </p>
+
+          <p>
+            <strong>Files Reviewed:</strong>
+            ${scan.files_reviewed ?? 0}
+          </p>
+
+          <p>
+            <strong>Scanned:</strong>
+            ${scan.scanned_at
+              ? new Date(scan.scanned_at).toLocaleString()
+              : "Unknown"}
+          </p>
+        </div>
+
+        <small style="color:var(--brand);font-weight:600;">
+          Open saved report →
+        </small>
+      </div>
+    `).join("");
+
+  } catch (error) {
+    console.error("Scan History error:", error);
+
+    scanHistoryList.innerHTML = `
+      <p class="empty-note">
+        Unable to load scan history.
+      </p>
+    `;
+  }
+}
+
+async function openSavedReport(scanId) {
+  console.log("Opening saved report:", scanId);
+
+  try {
+    const response = await fetch(`${API_BASE}/scans/${scanId}`);
+
+    if (!response.ok) {
+      throw new Error(`Failed to load saved report: ${response.status}`);
+    }
+
+    const scan = await response.json();
+
+    console.log("Saved report loaded:", scan);
+
+    const scanHistoryView = document.getElementById("scanHistoryView");
+    const repositoriesView = document.getElementById("repositoriesView");
+    const reportView = document.getElementById("reportView");
+
+    if (scanHistoryView) scanHistoryView.style.display = "none";
+    if (repositoriesView) repositoriesView.style.display = "none";
+    if (reportView) reportView.style.display = "block";
+
+renderSavedReport(scan);
+
+  } catch (error) {
+    console.error("Open saved report error:", error);
+
+    showCodeSentryModal(
+      "Unable to Open Report",
+      "CodeSentry could not load this saved scan report."
+    );
+  }
+}
+
 function renderRepositories(repositories) {
     const container = document.getElementById("repositoriesList");
 
-    if (!repositories || !repositories.length) {
-        container.innerHTML = `<p class="empty-note">No repositories scanned yet.</p>`;
+    if (!container) {
+        console.error("repositoriesList container not found");
+        return;
+    }
+
+    if (!Array.isArray(repositories) || repositories.length === 0) {
+        container.innerHTML = `
+            <p class="empty-note">
+                No repositories scanned yet.
+            </p>
+        `;
         return;
     }
 
     container.innerHTML = repositories.map(repo => {
-        const safeName = escapeHtml(repo.repository || "Unknown");
-        const encodedName = encodeURIComponent(repo.repository || "");
+        const repositoryName =
+            repo.repository || "Unknown Repository";
+
+        const repoUrl =
+            repo.repo_url || "URL unavailable";
+
+        const riskScore =
+            repo.repository_risk_score ?? "—";
+
+        const riskBand =
+            repo.repository_risk_band || "Unknown";
+
+        const filesReviewed =
+            repo.files_reviewed ?? 0;
+
+        const scanCount =
+            repo.scan_count ?? 0;
+
         const scannedAt = repo.last_scanned_at
             ? new Date(repo.last_scanned_at).toLocaleString()
             : "Unknown";
 
+        const encodedName =
+            encodeURIComponent(repositoryName);
+
+        const colors = sevColors(riskBand);
+
         return `
-            <div class="ocard"
-                 onclick="showRepositoryScans(decodeURIComponent('${encodedName}'))"
-                 style="cursor:pointer; margin-bottom:14px;">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
-                    <div>
-                        <h3 style="margin:0 0 12px;font-family:var(--display);">${safeName}</h3>
-                        <p><strong>Risk Score:</strong> ${repo.repository_risk_score ?? "—"}</p>
-                        <p><strong>Risk Band:</strong> ${escapeHtml(repo.repository_risk_band || "Unknown")}</p>
-                        <p><strong>Files Reviewed:</strong> ${repo.files_reviewed ?? 0}</p>
-                        <p><strong>Scan Count:</strong> ${repo.scan_count ?? 0}</p>
-                        <p><strong>Last Scanned:</strong> ${escapeHtml(scannedAt)}</p>
+            <div
+                class="ocard"
+                onclick="showRepositoryScans(
+                    decodeURIComponent('${encodedName}')
+                )"
+                style="
+                    cursor:pointer;
+                    margin-bottom:14px;
+                "
+            >
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:flex-start;
+                    gap:18px;
+                ">
+                    <div style="
+                        flex:1;
+                        min-width:0;
+                    ">
+                        <h3 style="
+                            margin:0 0 8px;
+                            font-family:var(--display);
+                        ">
+                            ${escapeHtml(repositoryName)}
+                        </h3>
+
+                        <p style="
+                            margin:0 0 16px;
+                            color:var(--muted);
+                            font-family:var(--mono);
+                            font-size:11px;
+                            word-break:break-all;
+                        ">
+                            ${escapeHtml(repoUrl)}
+                        </p>
+
+                        <div style="
+                            display:grid;
+                            grid-template-columns:
+                                repeat(4, minmax(110px, 1fr));
+                            gap:12px;
+                        ">
+                            <div>
+                                <div class="stat-label">
+                                    Scan Count
+                                </div>
+                                <strong>
+                                    ${scanCount}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <div class="stat-label">
+                                    Files Reviewed
+                                </div>
+                                <strong>
+                                    ${filesReviewed}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <div class="stat-label">
+                                    Risk Score
+                                </div>
+                                <strong>
+                                    ${riskScore}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <div class="stat-label">
+                                    Last Scanned
+                                </div>
+                                <strong style="
+                                    font-size:12px;
+                                ">
+                                    ${escapeHtml(scannedAt)}
+                                </strong>
+                            </div>
+                        </div>
                     </div>
-                    <span class="status-pill">
-                        <span class="pdot"></span>${escapeHtml(repo.repository_risk_band || "Unknown")}
+
+                    <span
+                        class="status-pill"
+                        style="
+                            color:${colors.fg};
+                            flex-shrink:0;
+                        "
+                    >
+                        <span
+                            class="pdot"
+                            style="
+                                background:${colors.hex};
+                            "
+                        ></span>
+
+                        ${escapeHtml(riskBand)}
                     </span>
                 </div>
-                <small style="color:var(--brand);font-weight:600;">Click to view scan history →</small>
+
+                <small style="
+                    display:block;
+                    margin-top:16px;
+                    color:var(--brand);
+                    font-weight:600;
+                ">
+                    View repository scan history →
+                </small>
             </div>
         `;
     }).join("");
@@ -940,6 +1873,1289 @@ function closeCodeSentryModal(event) {
     if (event && event.target !== event.currentTarget) return;
     const modal = document.getElementById("codeSentryModal");
     if (modal) modal.remove();
+}
+
+
+const CODESENTRY_SETTINGS_KEY = "codesentry_settings_v1";
+function getCodeSentrySettings(){const d={fullName:"",email:"",role:"",organization:"",workspaceName:"My CodeSentry Workspace",reportSort:"newest",reviewMode:"full",fileSort:"risk-desc",theme:"light",plan:"free"};try{return {...d,...JSON.parse(localStorage.getItem(CODESENTRY_SETTINGS_KEY)||"{}")}}catch{return d}}
+function persistCodeSentrySettings(p){const n={...getCodeSentrySettings(),...p};localStorage.setItem(CODESENTRY_SETTINGS_KEY,JSON.stringify(n));return n}
+
+async function showSettingsView(){
+  console.log("Opening Settings view"); hideDedicatedViews(); setActiveNav("Settings");
+  ["emptyState","overviewCards","analyticsRow","contentRow"].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display="none"});
+  const v=document.getElementById("settingsView"); if(!v){showCodeSentryModal("Settings Error","The Settings view could not be found.");return}
+  v.style.display="block"; loadSettingsForm(); await loadSettingsUsage(); window.scrollTo({top:0,behavior:"smooth"});
+}
+function showSettingsPanel(n,b){document.querySelectorAll(".settings-panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".settings-tab").forEach(t=>t.classList.remove("active"));document.getElementById(`settings-${n}`)?.classList.add("active");b?.classList.add("active")}
+function loadSettingsForm(){const s=getCodeSentrySettings();const m={settingFullName:s.fullName,settingEmail:s.email,settingRole:s.role,settingOrganization:s.organization,settingWorkspaceName:s.workspaceName,settingReportSort:s.reportSort,settingReviewMode:s.reviewMode,settingFileSort:s.fileSort};Object.entries(m).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.value=v});updatePlanCards(s.plan);updateThemeOptions(s.theme)}
+function saveGeneralSettings(){persistCodeSentrySettings({fullName:document.getElementById("settingFullName")?.value.trim()||"",email:document.getElementById("settingEmail")?.value.trim()||"",role:document.getElementById("settingRole")?.value.trim()||"",organization:document.getElementById("settingOrganization")?.value.trim()||""});showCodeSentryModal("Profile Saved","Your local CodeSentry profile details were saved in this browser.")}
+function saveWorkspaceSettings(){const s=persistCodeSentrySettings({workspaceName:document.getElementById("settingWorkspaceName")?.value.trim()||"My CodeSentry Workspace",reportSort:document.getElementById("settingReportSort")?.value||"newest"});const e=document.getElementById("reportsSortSelect");if(e)e.value=s.reportSort;showCodeSentryModal("Workspace Saved","Your workspace preferences were saved.")}
+function saveReviewSettings(){const s=persistCodeSentrySettings({reviewMode:document.getElementById("settingReviewMode")?.value||"full",fileSort:document.getElementById("settingFileSort")?.value||"risk-desc"});const m=document.getElementById("reviewMode");if(m)m.value=s.reviewMode;const f=document.getElementById("fileSort");if(f)f.value=s.fileSort;showCodeSentryModal("Review Preferences Saved","Your default review preferences were saved.")}
+function setCodeSentryTheme(t){persistCodeSentrySettings({theme:t});applyCodeSentryTheme(t);updateThemeOptions(t)}
+function applyCodeSentryTheme(t){
+  document.documentElement.setAttribute("data-codesentry-theme", t);
+  ["--bg","--surface","--surface2","--text","--muted","--border"].forEach(p =>
+    document.documentElement.style.removeProperty(p)
+  );
+}
+function updateThemeOptions(t){document.getElementById("themeLightOption")?.classList.toggle("selected",t==="light");document.getElementById("themeDarkOption")?.classList.toggle("selected",t==="dark")}
+async function loadSettingsUsage(){try{const [s,r]=await Promise.all([fetch(`${API_BASE}/scans`),fetch(`${API_BASE}/repositories`)]);if(!s.ok||!r.ok)throw new Error("Usage endpoints failed");const sd=await s.json(),rd=await r.json();const scans=Array.isArray(sd)?sd:(sd.scans||[]),repos=Array.isArray(rd)?rd:(rd.repositories||[]);document.getElementById("usageTotalScans").textContent=scans.length;document.getElementById("usageSavedReports").textContent=scans.length;document.getElementById("usageRepositories").textContent=repos.length}catch(e){console.error("Settings usage error:",e)}}
+function selectDemoPlan(p){persistCodeSentrySettings({plan:p});updatePlanCards(p);const l=p.charAt(0).toUpperCase()+p.slice(1);showCodeSentryModal("Demo Plan Updated",`${l} is now selected for this local demo workspace. No payment was processed.`)}
+function updatePlanCards(p){document.querySelectorAll(".plan-card").forEach(c=>{const a=c.dataset.plan===p;c.classList.toggle("current",a);c.querySelector(".current-badge")?.remove();if(a)c.insertAdjacentHTML("afterbegin",'<span class="current-badge">CURRENT</span>');const b=c.querySelector(".plan-button");if(b)b.textContent=a?"Current plan":`Choose ${c.dataset.plan.charAt(0).toUpperCase()+c.dataset.plan.slice(1)}`})}
+
+let reportsCenterScans = [];
+
+async function showReportsView() {
+  console.log("Opening Reports Center");
+
+  hideDedicatedViews();
+  setActiveNav("Reports");
+
+  document.getElementById("emptyState").style.display = "none";
+  document.getElementById("overviewCards").style.display = "none";
+  document.getElementById("analyticsRow").style.display = "none";
+  document.getElementById("contentRow").style.display = "none";
+
+  const reportsView = document.getElementById("reportsCenterView");
+  const reportsList = document.getElementById("reportsCenterList");
+  const searchInput = document.getElementById("reportsSearchInput");
+  const sortSelect = document.getElementById("reportsSortSelect");
+
+  if (!reportsView || !reportsList) {
+    console.error("Reports Center elements not found");
+    showCodeSentryModal(
+      "Reports View Error",
+      "The Reports Center could not be found in the page."
+    );
+    return;
+  }
+
+  reportsView.style.display = "block";
+  reportsList.innerHTML =
+    `<p class="empty-note">Loading saved reports...</p>`;
+
+  if (searchInput) searchInput.value = "";
+  if (sortSelect) sortSelect.value = getCodeSentrySettings().reportSort || "newest";
+
+  try {
+    const response = await fetch(`${API_BASE}/scans`);
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to load reports: ${response.status}`
+      );
+    }
+
+    const data = await response.json();
+
+    reportsCenterScans = Array.isArray(data)
+      ? data
+      : (data.scans || []);
+
+    console.log(
+      "Reports Center received:",
+      reportsCenterScans
+    );
+
+    filterReportsCenter();
+  } catch (error) {
+    console.error("Reports Center error:", error);
+
+    reportsList.innerHTML = `
+      <p class="empty-note">
+        Unable to load saved reports.
+      </p>
+    `;
+
+    showCodeSentryModal(
+      "Unable to Load Reports",
+      "CodeSentry could not retrieve saved reports. Check that the FastAPI backend is running on port 8000."
+    );
+  }
+}
+
+function filterReportsCenter() {
+  const searchInput =
+    document.getElementById("reportsSearchInput");
+
+  const sortSelect =
+    document.getElementById("reportsSortSelect");
+
+  const query =
+    (searchInput?.value || "").trim().toLowerCase();
+
+  const sortMode =
+    sortSelect?.value || "newest";
+
+  let scans = [...reportsCenterScans];
+
+  if (query) {
+    scans = scans.filter(scan =>
+      String(scan.repository || "")
+        .toLowerCase()
+        .includes(query) ||
+      String(scan.repo_url || "")
+        .toLowerCase()
+        .includes(query)
+    );
+  }
+
+  scans.sort((a, b) => {
+    if (sortMode === "oldest") {
+      return new Date(a.scanned_at || 0) -
+             new Date(b.scanned_at || 0);
+    }
+
+    if (sortMode === "risk-desc") {
+      return Number(b.repository_risk_score ?? -1) -
+             Number(a.repository_risk_score ?? -1);
+    }
+
+    if (sortMode === "name-asc") {
+      return String(a.repository || "")
+        .localeCompare(String(b.repository || ""));
+    }
+
+    return new Date(b.scanned_at || 0) -
+           new Date(a.scanned_at || 0);
+  });
+
+  renderReportsCenter(scans);
+}
+
+function renderReportsCenter(scans) {
+  const container =
+    document.getElementById("reportsCenterList");
+
+  const count =
+    document.getElementById("reportsResultCount");
+
+  if (!container) return;
+
+  if (count) {
+    count.textContent =
+      `${scans.length} saved report${scans.length === 1 ? "" : "s"}`;
+  }
+
+  if (!scans.length) {
+    container.innerHTML = `
+      <p class="empty-note">
+        No saved reports match your search.
+      </p>
+    `;
+    return;
+  }
+
+  container.innerHTML = scans.map(scan => {
+    const repository =
+      scan.repository || "Unknown Repository";
+
+    const repoUrl =
+      scan.repo_url || "URL unavailable";
+
+    const riskBand =
+      scan.repository_risk_band || "Unknown";
+
+    const riskScore =
+      scan.repository_risk_score ?? "—";
+
+    const filesReviewed =
+      scan.files_reviewed ?? 0;
+
+    const scannedAt = scan.scanned_at
+      ? new Date(scan.scanned_at).toLocaleString()
+      : "Unknown";
+
+    const colors = sevColors(riskBand);
+    const scanId = Number(scan.id);
+
+    return `
+      <div
+        class="ocard"
+        onclick="openReportFromCenter(${scanId})"
+        style="cursor:pointer;margin-bottom:14px;"
+      >
+        <div style="
+          display:flex;
+          align-items:flex-start;
+          gap:16px;
+        ">
+          ${ringSvg(
+            scan.repository_risk_score,
+            riskBand,
+            48
+          )}
+
+          <div style="flex:1;min-width:0;">
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              gap:14px;
+              align-items:flex-start;
+            ">
+              <div style="min-width:0;">
+                <h3 style="
+                  margin:0 0 6px;
+                  font-family:var(--display);
+                ">
+                  ${escapeHtml(repository)}
+                </h3>
+
+                <div style="
+                  font-family:var(--mono);
+                  font-size:10.5px;
+                  color:var(--muted);
+                  word-break:break-all;
+                ">
+                  ${escapeHtml(repoUrl)}
+                </div>
+              </div>
+
+              <span
+                class="status-pill"
+                style="color:${colors.fg};flex-shrink:0;"
+              >
+                <span
+                  class="pdot"
+                  style="background:${colors.hex};"
+                ></span>
+                ${escapeHtml(riskBand)}
+              </span>
+            </div>
+
+            <div style="
+              display:grid;
+              grid-template-columns:
+                repeat(4, minmax(100px, 1fr));
+              gap:12px;
+              margin-top:16px;
+            ">
+              <div>
+                <div class="stat-label">Report ID</div>
+                <strong>#${scanId}</strong>
+              </div>
+
+              <div>
+                <div class="stat-label">Files Reviewed</div>
+                <strong>${filesReviewed}</strong>
+              </div>
+
+              <div>
+                <div class="stat-label">Risk Score</div>
+                <strong>${riskScore}</strong>
+              </div>
+
+              <div>
+                <div class="stat-label">Scanned</div>
+                <strong style="font-size:12px;">
+                  ${escapeHtml(scannedAt)}
+                </strong>
+              </div>
+            </div>
+
+            <small style="
+              display:block;
+              margin-top:14px;
+              color:var(--brand);
+              font-weight:600;
+            ">
+              Open saved report →
+            </small>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+async function openReportFromCenter(scanId) {
+  console.log(
+    "Opening report from Reports Center:",
+    scanId
+  );
+
+  try {
+    const response = await fetch(
+      `${API_BASE}/scans/${encodeURIComponent(scanId)}`
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to load saved report: ${response.status}`
+      );
+    }
+
+    const data = await response.json();
+
+    hideDedicatedViews();
+
+    const reportView =
+      document.getElementById("reportView");
+
+    if (reportView) {
+      reportView.style.display = "block";
+    }
+
+    renderSavedReport(data);
+  } catch (error) {
+    console.error(
+      "Reports Center open error:",
+      error
+    );
+
+    showCodeSentryModal(
+      "Unable to Open Report",
+      "CodeSentry could not load this saved report."
+    );
+  }
+}
+
+async function showAnalyticsView() {
+  console.log("Opening Analytics view");
+
+  hideDedicatedViews();
+  setActiveNav("Analytics");
+
+  document.getElementById("emptyState").style.display = "none";
+  document.getElementById("overviewCards").style.display = "none";
+  document.getElementById("analyticsRow").style.display = "none";
+  document.getElementById("contentRow").style.display = "none";
+
+  const analyticsView = document.getElementById("analyticsView");
+  if (!analyticsView) {
+    console.error("Analytics view element not found");
+    return;
+  }
+
+  analyticsView.style.display = "block";
+
+  try {
+    const response = await fetch(`${API_BASE}/analytics`);
+
+    if (!response.ok) {
+      throw new Error(
+        `Analytics request failed: ${response.status}`
+      );
+    }
+
+    const data = await response.json();
+    renderAnalytics(data);
+  } catch (error) {
+    console.error("Analytics load failed:", error);
+
+    document.getElementById("analyticsInsights").innerHTML = `
+      <p class="empty-note">
+        Could not load analytics data.
+      </p>
+    `;
+  }
+}
+
+function renderAnalytics(data) {
+  const cards = document.querySelectorAll(
+    "#analyticsSummaryCards .stat-num"
+  );
+
+  const trend = Array.isArray(data.trend)
+    ? data.trend
+    : [];
+
+  const repositoriesTracked = new Set(
+    trend
+      .map((item) => item.repository)
+      .filter(Boolean)
+  ).size;
+
+  const byBand = data.by_band || {};
+
+  cards[0].textContent =
+    data.total_scans ?? 0;
+
+  cards[1].textContent =
+    data.average_risk_score != null
+      ? Number(data.average_risk_score).toFixed(1)
+      : "—";
+
+  cards[2].textContent =
+    byBand.High ?? 0;
+
+  cards[3].textContent =
+    repositoriesTracked;
+
+  renderAnalyticsRiskDistribution(byBand);
+  renderAnalyticsTrend(trend);
+  renderAnalyticsInsights(data, repositoriesTracked);
+}
+
+
+function renderAnalyticsRiskDistribution(byBand) {
+  const container = document.getElementById(
+    "analyticsRiskDistribution"
+  );
+
+  const bands = [
+    ["Low", byBand.Low ?? 0],
+    ["Medium", byBand.Medium ?? 0],
+    ["High", byBand.High ?? 0],
+    ["Unknown", byBand.Unknown ?? 0],
+  ];
+
+  const maxValue = Math.max(
+    ...bands.map(([, value]) => value),
+    1
+  );
+
+  container.innerHTML = bands
+    .map(([label, value]) => {
+      const width = Math.max(
+        (value / maxValue) * 100,
+        value > 0 ? 4 : 0
+      );
+
+      return `
+        <div style="margin-bottom:16px;">
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            margin-bottom:7px;
+            font-size:13px;
+          ">
+            <span>${label}</span>
+            <strong>${value}</strong>
+          </div>
+
+          <div style="
+            height:8px;
+            background:var(--line);
+            border-radius:999px;
+            overflow:hidden;
+          ">
+            <div style="
+              width:${width}%;
+              height:100%;
+              background:var(--brand);
+              border-radius:999px;
+            "></div>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+
+function renderAnalyticsTrend(trend) {
+  const container = document.getElementById(
+    "analyticsPersistentTrend"
+  );
+
+  const validTrend = trend.filter(
+    (item) =>
+      item.repository_risk_score !== null &&
+      item.repository_risk_score !== undefined
+  );
+
+  if (!validTrend.length) {
+    container.innerHTML = `
+      <p class="empty-note">
+        No scored scans available yet.
+      </p>
+    `;
+    return;
+  }
+
+  const recent = validTrend.slice(-10);
+
+  container.innerHTML = recent
+    .map((item) => {
+      const score = Number(
+        item.repository_risk_score
+      );
+
+      const width = Math.max(
+        Math.min(score, 100),
+        score > 0 ? 4 : 0
+      );
+
+      return `
+        <div style="margin-bottom:12px;">
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:12px;
+            margin-bottom:6px;
+            font-size:12px;
+          ">
+            <span style="
+              overflow:hidden;
+              text-overflow:ellipsis;
+              white-space:nowrap;
+            ">
+              ${item.repository || "Unknown repository"}
+            </span>
+
+            <strong>${score.toFixed(1)}</strong>
+          </div>
+
+          <div style="
+            height:7px;
+            background:var(--line);
+            border-radius:999px;
+            overflow:hidden;
+          ">
+            <div style="
+              width:${width}%;
+              height:100%;
+              background:var(--brand);
+              border-radius:999px;
+            "></div>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+
+function renderAnalyticsInsights(
+  data,
+  repositoriesTracked
+) {
+  const container = document.getElementById(
+    "analyticsInsights"
+  );
+
+  const byBand = data.by_band || {};
+
+  const low = byBand.Low ?? 0;
+  const medium = byBand.Medium ?? 0;
+  const high = byBand.High ?? 0;
+  const unknown = byBand.Unknown ?? 0;
+
+  container.innerHTML = `
+    <div class="overview-list">
+      <div class="overview-row">
+        <span>Total saved scans</span>
+        <strong>${data.total_scans ?? 0}</strong>
+      </div>
+
+      <div class="overview-row">
+        <span>Repositories tracked</span>
+        <strong>${repositoriesTracked}</strong>
+      </div>
+
+      <div class="overview-row">
+        <span>Low risk scans</span>
+        <strong>${low}</strong>
+      </div>
+
+      <div class="overview-row">
+        <span>Medium risk scans</span>
+        <strong>${medium}</strong>
+      </div>
+
+      <div class="overview-row">
+        <span>High risk scans</span>
+        <strong>${high}</strong>
+      </div>
+
+      <div class="overview-row">
+        <span>Unscored scans</span>
+        <strong>${unknown}</strong>
+      </div>
+    </div>
+  `;
+}
+
+
+try {
+  const initialSettings = getCodeSentrySettings();
+  applyCodeSentryTheme(initialSettings.theme);
+  const initialMode = document.getElementById("reviewMode");
+  if (initialMode) initialMode.value = initialSettings.reviewMode;
+  const initialFileSort = document.getElementById("fileSort");
+  if (initialFileSort) initialFileSort.value = initialSettings.fileSort;
+} catch (error) {
+  console.error("Settings initialization error:", error);
+}
+
+
+/* REPOSITORY-CONTEXT NAVIGATION */
+let repositoryContextCache = [];
+let selectedRepositoryName = null;
+let selectedRepositoryDetail = null;
+let selectedRepositoryTab = "overview";
+
+function repositoryContextIconSvg() {
+  return `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v12H3z"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>`;
+}
+
+async function showRepositoriesView() {
+  console.log("Opening repository-context view");
+
+  hideDedicatedViews();
+  setActiveNav("Repositories");
+
+  ["emptyState", "overviewCards", "analyticsRow", "contentRow"].forEach(id => {
+    const element = document.getElementById(id);
+    if (element) element.style.display = "none";
+  });
+
+  const view = document.getElementById("repositoriesView");
+  const list = document.getElementById("repositoriesList");
+  const workspace = document.getElementById("repositoryWorkspace");
+
+  if (!view || !list || !workspace) {
+    console.error("Repository context elements not found");
+    return;
+  }
+
+  view.style.display = "block";
+  list.innerHTML = `<p class="empty-note">Loading repositories...</p>`;
+
+  try {
+    const response = await fetch(`${API_BASE}/repositories`);
+    if (!response.ok) {
+      throw new Error(`Repositories request failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    repositoryContextCache = Array.isArray(data)
+      ? data
+      : (data.repositories || []);
+
+    console.log("Repository context received:", repositoryContextCache);
+    renderRepositories(repositoryContextCache);
+
+    if (!repositoryContextCache.length) {
+      workspace.innerHTML = `<div class="repo-context-empty">No scanned repositories found.</div>`;
+      return;
+    }
+
+    const repositoryToOpen =
+      repositoryContextCache.find(repo => repo.repository === selectedRepositoryName)
+      || repositoryContextCache[0];
+
+    await selectRepository(repositoryToOpen.repository, selectedRepositoryTab);
+  } catch (error) {
+    console.error("Repository context error:", error);
+    list.innerHTML = `<p class="empty-note">Could not load repositories.</p>`;
+    workspace.innerHTML = `<div class="repo-context-empty">Repository data is unavailable.</div>`;
+  }
+}
+
+function renderRepositories(repositories) {
+  const container = document.getElementById("repositoriesList");
+  const count = document.getElementById("repoDirectoryCount");
+  if (!container) return;
+
+  if (count) count.textContent = `${repositories.length} tracked`;
+
+  if (!repositories.length) {
+    container.innerHTML = `<p class="empty-note">No repositories scanned yet.</p>`;
+    return;
+  }
+
+  container.innerHTML = repositories.map(repository => {
+    const name = repository.repository || "Unknown Repository";
+    const active = name === selectedRepositoryName;
+    const band = repository.repository_risk_band || "Unknown";
+    const scans = repository.scan_count ?? 0;
+
+    return `
+      <button type="button"
+        class="repo-context-item ${active ? "active" : ""}"
+        onclick='selectRepository(${JSON.stringify(name)}, "overview")'>
+        <span class="repo-context-icon">${repositoryContextIconSvg()}</span>
+        <span style="min-width:0;flex:1">
+          <span class="repo-context-item-name">${escapeHtml(name)}</span>
+          <span class="repo-context-item-meta">${scans} scans · ${escapeHtml(band)} risk</span>
+        </span>
+      </button>`;
+  }).join("");
+}
+
+async function selectRepository(repositoryName, tabName = "overview") {
+  selectedRepositoryName = repositoryName;
+  selectedRepositoryTab = tabName;
+  renderRepositories(repositoryContextCache);
+
+  const workspace = document.getElementById("repositoryWorkspace");
+  if (!workspace) return;
+
+  workspace.innerHTML = `<div class="repo-context-empty">Loading repository workspace...</div>`;
+
+  try {
+    const response = await fetch(
+      `${API_BASE}/repositories/${encodeURIComponent(repositoryName)}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`Repository detail request failed: ${response.status}`);
+    }
+
+    selectedRepositoryDetail = await response.json();
+    renderRepositoryContextShell();
+    await openRepositoryContextTab(tabName);
+  } catch (error) {
+    console.error("Selected repository error:", error);
+    workspace.innerHTML = `<div class="repo-context-empty">Could not load this repository workspace.</div>`;
+  }
+}
+
+function renderRepositoryContextShell() {
+  const workspace = document.getElementById("repositoryWorkspace");
+  const repository = selectedRepositoryDetail || {};
+  if (!workspace) return;
+
+  const name = repository.repository || selectedRepositoryName || "Repository";
+  const band = repository.repository_risk_band || "Unknown";
+
+  workspace.innerHTML = `
+    <div class="repo-context-header">
+      <div class="repo-context-title">
+        <div class="repo-context-icon" style="width:48px;height:48px">
+          ${repositoryContextIconSvg()}
+        </div>
+        <div style="min-width:0">
+          <p class="eyebrow" style="margin-bottom:5px">REPOSITORY WORKSPACE</p>
+          <h2>${escapeHtml(name)}</h2>
+          <p>${escapeHtml(repository.repo_url || "Repository URL unavailable")}</p>
+        </div>
+      </div>
+      <span class="risk-badge ${getRiskClass(band)}">
+        <span class="risk-dot"></span>${escapeHtml(band)}
+      </span>
+    </div>
+
+    <div class="repo-context-tabs">
+      <button class="repo-context-tab" data-repo-context-tab="overview" onclick="openRepositoryContextTab('overview')">Overview</button>
+      <button class="repo-context-tab" data-repo-context-tab="history" onclick="openRepositoryContextTab('history')">Scan History</button>
+      <button class="repo-context-tab" data-repo-context-tab="reports" onclick="openRepositoryContextTab('reports')">Reports</button>
+      <button class="repo-context-tab" data-repo-context-tab="analytics" onclick="openRepositoryContextTab('analytics')">Analytics</button>
+    </div>
+
+    <div id="repositoryTabContent" class="repo-context-content">
+      <p class="empty-note">Loading...</p>
+    </div>`;
+}
+
+function setRepositoryContextActiveTab(tabName) {
+  document.querySelectorAll("[data-repo-context-tab]").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.repoContextTab === tabName
+    );
+  });
+}
+
+async function openRepositoryContextTab(tabName) {
+  selectedRepositoryTab = tabName;
+  setRepositoryContextActiveTab(tabName);
+
+  const content = document.getElementById("repositoryTabContent");
+  if (!content || !selectedRepositoryName) return;
+
+  if (tabName === "overview") {
+    renderRepositoryContextOverview();
+    return;
+  }
+
+  content.innerHTML = `<p class="empty-note">Loading ${escapeHtml(tabName)}...</p>`;
+
+  if (tabName === "history" || tabName === "reports") {
+    try {
+      const response = await fetch(
+        `${API_BASE}/repositories/${encodeURIComponent(selectedRepositoryName)}/scans`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Repository scans request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      renderRepositoryContextScans(data.scans || [], tabName);
+    } catch (error) {
+      console.error(`Repository ${tabName} error:`, error);
+      content.innerHTML = `<p class="empty-note">Could not load repository ${escapeHtml(tabName)}.</p>`;
+    }
+    return;
+  }
+
+  if (tabName === "analytics") {
+    try {
+      const response = await fetch(
+        `${API_BASE}/analytics/repositories/${encodeURIComponent(selectedRepositoryName)}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Repository analytics request failed: ${response.status}`);
+      }
+
+      renderRepositoryContextAnalytics(await response.json());
+    } catch (error) {
+      console.error("Repository analytics error:", error);
+      content.innerHTML = `<p class="empty-note">Could not load repository analytics.</p>`;
+    }
+  }
+}
+
+function renderRepositoryContextOverview() {
+  const content = document.getElementById("repositoryTabContent");
+  const repository = selectedRepositoryDetail || {};
+  if (!content) return;
+
+  const lastScanned = repository.last_scanned_at
+    ? new Date(repository.last_scanned_at).toLocaleString()
+    : "—";
+
+  content.innerHTML = `
+    <div class="repo-context-metrics">
+      ${repositoryContextMetric("Total Scans", repository.scan_count ?? 0)}
+      ${repositoryContextMetric("Files Reviewed", repository.files_reviewed ?? 0)}
+      ${repositoryContextMetric("Risk Score", repository.repository_risk_score ?? "—")}
+      ${repositoryContextMetric("Risk Band", repository.repository_risk_band || "Unknown")}
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px">
+      <div class="repo-context-metric">
+        <span>Latest Commit Ref</span>
+        <strong style="font:600 12px var(--mono);overflow-wrap:anywhere">
+          ${escapeHtml(repository.commit_sha || "—")}
+        </strong>
+      </div>
+      <div class="repo-context-metric">
+        <span>Last Scanned</span>
+        <strong style="font-size:13px">${escapeHtml(lastScanned)}</strong>
+      </div>
+    </div>`;
+}
+
+function repositoryContextMetric(label, value) {
+  return `
+    <div class="repo-context-metric">
+      <span>${escapeHtml(label)}</span>
+      <strong>${escapeHtml(String(value))}</strong>
+    </div>`;
+}
+
+function renderRepositoryContextScans(scans, mode) {
+  const content = document.getElementById("repositoryTabContent");
+  if (!content) return;
+
+  if (!scans.length) {
+    content.innerHTML = `<p class="empty-note">No saved scans found for this repository.</p>`;
+    return;
+  }
+
+  content.innerHTML = scans.map(scan => {
+    const band = scan.repository_risk_band || "Unknown";
+    const scannedAt = scan.scanned_at
+      ? new Date(scan.scanned_at).toLocaleString()
+      : "Unknown";
+
+    return `
+      <div class="repo-context-list-card" onclick="openSavedReport(${Number(scan.id)})">
+        <div style="display:flex;align-items:center;gap:13px">
+          ${ringSvg(scan.repository_risk_score, band, 44)}
+          <div style="flex:1;min-width:0">
+            <strong style="font-family:var(--display)">Scan #${Number(scan.id)}</strong>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px">
+              ${escapeHtml(scannedAt)} · ${scan.files_reviewed ?? 0} files reviewed
+            </div>
+          </div>
+          <small style="color:var(--brand);font-weight:700">
+            ${mode === "reports" ? "Open report" : "View scan"} →
+          </small>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+function renderRepositoryContextAnalytics(data) {
+  const content = document.getElementById("repositoryTabContent");
+  if (!content) return;
+
+  const distribution = data.risk_distribution || {};
+
+  const trend = Array.isArray(data.risk_trend)
+    ? data.risk_trend
+    : [];
+
+  // Keep only genuinely scored scans.
+  // null / undefined values must not become fake zero-risk points.
+  const validTrend = trend.filter(
+    point =>
+      point.repository_risk_score !== null &&
+      point.repository_risk_score !== undefined &&
+      Number.isFinite(
+        Number(point.repository_risk_score)
+      )
+  );
+
+  const distributionBands = [
+    "High",
+    "Medium",
+    "Low",
+    "Unknown"
+  ];
+
+  const maxBand = Math.max(
+    ...distributionBands.map(
+      band => Number(distribution[band] || 0)
+    ),
+    1
+  );
+
+  content.innerHTML = `
+    <div class="repo-context-analytics">
+      ${repositoryContextMetric(
+        "Total Scans",
+        data.total_scans ?? 0
+      )}
+
+      ${repositoryContextMetric(
+        "Average Risk",
+        data.average_risk_score ?? "—"
+      )}
+
+      ${repositoryContextMetric(
+        "High-Risk Scans",
+        data.high_risk_scans ?? 0
+      )}
+
+      ${repositoryContextMetric(
+        "Scored Trend Points",
+        validTrend.length
+      )}
+    </div>
+
+    <div style="
+      display:grid;
+      grid-template-columns:1fr 1.6fr;
+      gap:14px;
+    ">
+      <div class="panel">
+        <div class="panel-title">
+          Risk Distribution
+        </div>
+
+        <div class="panel-subtitle">
+          Only ${escapeHtml(selectedRepositoryName)} scans.
+        </div>
+
+        <div class="repo-context-dist">
+          ${distributionBands.map(band => {
+            const value =
+              Number(distribution[band] || 0);
+
+            const width =
+              value > 0
+                ? Math.max(
+                    (value / maxBand) * 100,
+                    4
+                  )
+                : 0;
+
+            return `
+              <div class="repo-context-dist-row">
+                <span>
+                  ${escapeHtml(band)}
+                </span>
+
+                <div class="repo-context-track">
+                  <div
+                    class="repo-context-fill"
+                    style="width:${width}%"
+                  ></div>
+                </div>
+
+                <strong>
+                  ${value}
+                </strong>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          Persistent Risk Trend
+        </div>
+
+        <div class="panel-subtitle">
+          Latest saved scored risk points for this repository.
+        </div>
+
+        ${
+          validTrend.length
+            ? validTrend
+                .slice(-12)
+                .map(point => {
+                  const score = Number(
+                    point.repository_risk_score
+                  );
+
+                  const width = Math.max(
+                    0,
+                    Math.min(100, score)
+                  );
+
+                  const scannedAt =
+                    point.scanned_at
+                      ? new Date(
+                          point.scanned_at
+                        ).toLocaleString()
+                      : "Unknown time";
+
+                  return `
+                    <div style="
+                      margin-bottom:12px;
+                    ">
+                      <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        gap:12px;
+                        margin-bottom:6px;
+                        font-size:11px;
+                      ">
+                        <span style="
+                          color:var(--muted);
+                          overflow:hidden;
+                          text-overflow:ellipsis;
+                          white-space:nowrap;
+                        ">
+                          ${escapeHtml(scannedAt)}
+                        </span>
+
+                        <strong style="
+                          font:600 11px var(--mono);
+                        ">
+                          ${score.toFixed(1)}
+                        </strong>
+                      </div>
+
+                      <div class="repo-context-track">
+                        <div
+                          class="repo-context-fill"
+                          style="width:${width}%"
+                        ></div>
+                      </div>
+                    </div>
+                  `;
+                })
+                .join("")
+            : `
+              <p class="empty-note">
+                No scored trend data available.
+              </p>
+            `
+        }
+      </div>
+    </div>
+  `;
+}
+
+/* Preserve legacy repository-history calls by routing them into selected-repo context. */
+async function showRepositoryScans(repositoryName) {
+  hideDedicatedViews();
+  const view = document.getElementById("repositoriesView");
+  if (view) view.style.display = "block";
+  await selectRepository(repositoryName, "history");
+}
+
+
+/* SIDEBAR REPOSITORY TREE — repository-scoped navigation */
+let repositorySidebarLoaded = false;
+let repositorySidebarExpanded = false;
+
+async function toggleRepositoriesSidebar() {
+  repositorySidebarExpanded = !repositorySidebarExpanded;
+  const tree = document.getElementById("repositorySidebarTree");
+  if (tree) tree.style.display = repositorySidebarExpanded ? "block" : "none";
+
+  if (!repositorySidebarLoaded) await loadRepositorySidebarTree();
+
+  // Keep the existing repository workspace page.
+  await showRepositoriesView();
+}
+
+async function loadRepositorySidebarTree() {
+  const list = document.getElementById("repositorySidebarList");
+  if (!list) return;
+
+  list.innerHTML = `<div class="repo-sidebar-loading">Loading repositories...</div>`;
+
+  try {
+    const response = await fetch(`${API_BASE}/repositories`);
+    if (!response.ok) throw new Error(`Repositories request failed: ${response.status}`);
+
+    const data = await response.json();
+    repositoryContextCache = Array.isArray(data) ? data : (data.repositories || []);
+    repositorySidebarLoaded = true;
+    renderRepositorySidebarTree();
+  } catch (error) {
+    console.error("Repository sidebar error:", error);
+    list.innerHTML = `<div class="repo-sidebar-loading">Could not load repositories.</div>`;
+  }
+}
+
+function renderRepositorySidebarTree() {
+  const list = document.getElementById("repositorySidebarList");
+  if (!list) return;
+
+  if (!repositoryContextCache.length) {
+    list.innerHTML = `<div class="repo-sidebar-loading">No repositories yet.</div>`;
+    return;
+  }
+
+  list.innerHTML = repositoryContextCache.map(repository => {
+    const name = repository.repository || "Unknown Repository";
+    const isOpen = name === selectedRepositoryName;
+
+    return `
+      <div class="repo-sidebar-repo ${isOpen ? "open" : ""}">
+        <button type="button"
+                class="repo-sidebar-repo-btn ${isOpen ? "active" : ""}"
+                onclick='toggleSidebarRepository(${JSON.stringify(name)})'>
+          <span class="repo-sidebar-repo-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 5a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v12H3z"/>
+            </svg>
+          </span>
+          <span class="repo-sidebar-repo-name">${escapeHtml(name)}</span>
+          <span class="repo-sidebar-chevron">▶</span>
+        </button>
+
+        <div class="repo-sidebar-subnav">
+          ${sidebarRepositorySubButton(name, "overview", "Overview")}
+          ${sidebarRepositorySubButton(name, "history", "Scan History")}
+          ${sidebarRepositorySubButton(name, "reports", "Reports")}
+          ${sidebarRepositorySubButton(name, "analytics", "Analytics")}
+        </div>
+      </div>`;
+  }).join("");
+
+  updateRepositorySidebarActiveState();
+}
+
+function repositorySidebarTabIcon(tabName) {
+  const icons = {
+    overview: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>`,
+    history: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`,
+    reports: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>`,
+    analytics: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9"/><path d="M10 19V5"/><path d="M16 19v-7"/><path d="M22 19V3"/></svg>`
+  };
+  return icons[tabName] || "";
+}
+
+function sidebarRepositorySubButton(repositoryName, tabName, label) {
+  const active =
+    repositoryName === selectedRepositoryName &&
+    tabName === selectedRepositoryTab;
+
+  return `
+    <button type="button"
+            class="${active ? "active" : ""}"
+            data-sidebar-repo-tab="${escapeHtml(repositoryName)}::${tabName}"
+            onclick='openRepositoryFromSidebar(${JSON.stringify(repositoryName)}, ${JSON.stringify(tabName)})'>
+      <span class="repo-sidebar-subnav-icon">${repositorySidebarTabIcon(tabName)}</span>
+      <span>${escapeHtml(label)}</span>
+    </button>`;
+}
+
+function toggleSidebarRepository(repositoryName) {
+  const sameRepository = selectedRepositoryName === repositoryName;
+  const repoNodes = document.querySelectorAll(".repo-sidebar-repo");
+
+  if (sameRepository) {
+    const selectedNode = Array.from(repoNodes).find(node =>
+      (node.querySelector(".repo-sidebar-repo-name")?.textContent || "") === repositoryName
+    );
+    if (selectedNode) selectedNode.classList.toggle("open");
+    return;
+  }
+
+  openRepositoryFromSidebar(repositoryName, "overview");
+}
+
+async function openRepositoryFromSidebar(repositoryName, tabName) {
+  repositorySidebarExpanded = true;
+  const tree = document.getElementById("repositorySidebarTree");
+  if (tree) tree.style.display = "block";
+
+  hideDedicatedViews();
+  setActiveNav("Repositories");
+
+  ["emptyState", "overviewCards", "analyticsRow", "contentRow"].forEach(id => {
+    const element = document.getElementById(id);
+    if (element) element.style.display = "none";
+  });
+
+  const view = document.getElementById("repositoriesView");
+  if (view) view.style.display = "block";
+
+  await selectRepository(repositoryName, tabName);
+  updateRepositorySidebarActiveState();
+}
+
+function updateRepositorySidebarActiveState() {
+  document.querySelectorAll(".repo-sidebar-repo").forEach(node => {
+    const name = node.querySelector(".repo-sidebar-repo-name")?.textContent || "";
+    const selected = name === selectedRepositoryName;
+    node.classList.toggle("open", selected);
+
+    const repoButton = node.querySelector(".repo-sidebar-repo-btn");
+    if (repoButton) repoButton.classList.toggle("active", selected);
+  });
+
+  document.querySelectorAll("[data-sidebar-repo-tab]").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.sidebarRepoTab === `${selectedRepositoryName}::${selectedRepositoryTab}`
+    );
+  });
+}
+
+/* Repository sub-navigation now lives in the main sidebar. */
+function renderRepositoryContextShell() {
+  const workspace = document.getElementById("repositoryWorkspace");
+  const repository = selectedRepositoryDetail || {};
+  if (!workspace) return;
+
+  const name = repository.repository || selectedRepositoryName || "Repository";
+  const band = repository.repository_risk_band || "Unknown";
+
+  workspace.innerHTML = `
+    <div class="repo-context-header">
+      <div class="repo-context-title">
+        <div class="repo-context-icon" style="width:48px;height:48px">
+          ${repositoryContextIconSvg()}
+        </div>
+        <div style="min-width:0">
+          <p class="eyebrow" style="margin-bottom:5px">REPOSITORY WORKSPACE</p>
+          <h2>${escapeHtml(name)}</h2>
+          <p>${escapeHtml(repository.repo_url || "Repository URL unavailable")}</p>
+        </div>
+      </div>
+      <span class="risk-badge ${getRiskClass(band)}">
+        <span class="risk-dot"></span>${escapeHtml(band)}
+      </span>
+    </div>
+
+    <div id="repositoryTabContent" class="repo-context-content">
+      <p class="empty-note">Loading...</p>
+    </div>`;
+
+  updateRepositorySidebarActiveState();
+}
+
+function setRepositoryContextActiveTab(tabName) {
+  selectedRepositoryTab = tabName;
+  updateRepositorySidebarActiveState();
 }
 
 </script>
